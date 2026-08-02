@@ -1,0 +1,31 @@
+generated: '2026-07-21'
+method: derived
+source: >-
+  Derived from the Trendyol Marketplace / Partner API documentation
+  (https://developers.trendyol.com/docs). Assesses cross-cutting standards
+  conformance; no third-party certification is asserted here.
+standards:
+  - id: rest-json
+    conforms: true
+    evidence: REST over HTTPS with JSON request/response bodies.
+  - id: oauth2
+    conforms: true
+    evidence: Authorization-code OAuth 2.0 flow offered for multi-supplier integrators.
+  - id: http-basic-auth
+    conforms: true
+    evidence: Primary auth is HTTP Basic (base64 API Key:Secret).
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: 'Errors use a custom { errors: [ { key, message } ] } envelope, not application/problem+json.'
+  - id: rfc8594-sunset-header
+    conforms: false
+    evidence: Deprecations announced on the portal/changelog, no Sunset/Deprecation headers.
+  - id: cursor-pagination
+    conforms: true
+    evidence: getShipmentPackagesStream and filter endpoints use nextPageToken cursor pagination.
+  - id: webhooks
+    conforms: true
+    evidence: HTTP webhook subscription API for order-package events.
+  - id: idempotency-key
+    conforms: false
+    evidence: No client-supplied Idempotency-Key; server-side duplicate suppression only.

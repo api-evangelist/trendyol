@@ -1,0 +1,42 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://developers.trendyol.com/docs/webhook-model and the Webhook API
+  reference operations indexed in https://developers.trendyol.com/llms.txt.
+spec_type: Webhooks
+description: >-
+  Trendyol Marketplace exposes an HTTP webhook system so sellers/integrators
+  receive push notifications for order-package events instead of polling. A
+  webhook subscription is created with a target URL and a set of order statuses;
+  Trendyol POSTs the event payload to that URL. Trendyol does not publish an
+  AsyncAPI document, so this artifact captures the webhook catalog and
+  management surface.
+transport: HTTP POST to a subscriber-provided URL
+delivery: at-least-once (subscribers should handle retries/duplicates)
+subscription_management:
+  - operationId: createWebhook
+    summary: Create a webhook subscription for order-package events.
+    ref: https://developers.trendyol.com/reference/createwebhook
+  - operationId: getWebhooks
+    summary: List existing webhook subscriptions.
+    ref: https://developers.trendyol.com/reference/getwebhooks
+  - operationId: updateWebhook
+    summary: Update a webhook subscription (URL, subscribed statuses).
+    ref: https://developers.trendyol.com/reference/updatewebhook
+  - operationId: deleteWebhook
+    summary: Delete a webhook subscription.
+    ref: https://developers.trendyol.com/reference/deletewebhook
+  - operationId: activateWebhook
+    summary: Activate a passive webhook subscription.
+    ref: https://developers.trendyol.com/reference/activatewebhook
+  - operationId: deactivateWebhook
+    summary: Deactivate an active webhook subscription.
+    ref: https://developers.trendyol.com/reference/deactivatewebhook
+events:
+  domain: order-package status changes
+  note: >-
+    A subscription is bound to the order-package lifecycle statuses (e.g.
+    Created, Picking, Invoiced, Shipped, Delivered, UnDelivered, Cancelled,
+    Returned). The exact status set the subscriber wants is configured on the
+    subscription; see the Webhook Model page for the payload shape.
+docs: https://developers.trendyol.com/docs/webhook-model

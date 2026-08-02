@@ -1,0 +1,69 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://developers.trendyol.com/docs/2-authorization and
+  https://developers.trendyol.com/v2.0/docs/authorization — the Trendyol
+  Marketplace (Partner) API authorization documentation. Trendyol does not
+  publish a single OpenAPI document (endpoints are embedded per-page in the
+  ReadMe docs / llms.txt index), so this profile is captured from the docs
+  rather than derived from a spec.
+description: >-
+  How a caller authenticates to the Trendyol Marketplace / Partner API. Sellers
+  and self-integrators use HTTP Basic authentication with credentials generated
+  in the Seller Center; integrators managing many suppliers use an OAuth 2.0
+  authorization-code flow. Every request must also carry a User-Agent header or
+  it is rejected with 403.
+summary:
+  types: [http, oauth2]
+  http_scheme: basic
+  oauth2_flows: [authorizationCode]
+  mandatory_headers: [Authorization, User-Agent]
+schemes:
+  - name: basicAuth
+    type: http
+    scheme: basic
+    description: >-
+      HTTP Basic authentication. The credential is base64(API Key : API Secret
+      Key). The supplierId / sellerId is carried in the request path
+      (…/sellers/{sellerId}/…), not in the credential. Credentials are unique
+      per supplierId and differ between the production and stage (test)
+      environments.
+    credentials:
+      - supplierId (a.k.a. sellerId) — carried in the URL path
+      - API Key
+      - API Secret Key
+    credentials_source: >-
+      Seller Center → "Hesap Bilgileri / Entegrasyon Bilgileri" (Account
+      Details → Integration Information). Visible only to the seller panel
+      master user.
+    header_example: 'Authorization: Basic <base64(apiKey:apiSecret)>'
+    docs: https://developers.trendyol.com/docs/2-authorization
+  - name: userAgent
+    type: header
+    required: true
+    description: >-
+      Every request to the Partner API must send a User-Agent header or it is
+      rejected with HTTP 403. Format is "{sellerId} - {CompanyName}"
+      (alphanumeric, max 30 chars) when working through an integrator company,
+      or "{sellerId} - SelfIntegration" when self-integrated.
+    header_example: 'User-Agent: 1234 - SelfIntegration'
+  - name: oauth2
+    type: oauth2
+    description: >-
+      For integrators that manage many suppliers, Trendyol offers an OAuth 2.0
+      authorization-code flow: the integrator registers a client_id /
+      client_secret, each supplier authorizes the integrator from the Partner
+      panel, and the integrator receives a ~1 hour access token plus a ~30 day
+      refresh token. Applies to integrator platforms rather than single-seller
+      self-integrations.
+    flows:
+      - flow: authorizationCode
+        access_token_ttl: ~1 hour
+        refresh_token_ttl: ~30 days
+    docs: https://developers.trendyol.com/docs/2-authorization
+errors:
+  - status: 401
+    exception: ClientApiAuthenticationException
+    cause: Missing or incorrect Basic credentials.
+  - status: 403
+    cause: Missing User-Agent header.

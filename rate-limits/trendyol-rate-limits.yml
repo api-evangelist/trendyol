@@ -1,0 +1,24 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://developers.trendyol.com/docs/1-servis-limitleri and
+  https://developers.trendyol.com/docs/2-authorization
+description: >-
+  Documented request-rate limits for the Trendyol Marketplace / Partner API.
+  Exceeding a limit returns HTTP 429 with the body key "too.many.requests".
+signal:
+  status: 429
+  body_key: too.many.requests
+limits:
+  - scope: default (per endpoint)
+    limit_count: 50
+    window_seconds: 10
+    note: Default ceiling applied per endpoint.
+  - scope: getBuyboxInformation
+    limit_count: 1000
+    window_seconds: 60
+  - scope: updatePriceAndInventory
+    note: >-
+      Not a rate limit but a duplicate-suppression rule — an identical request
+      may not be resubmitted within 15 minutes.
+docs: https://developers.trendyol.com/docs/1-servis-limitleri

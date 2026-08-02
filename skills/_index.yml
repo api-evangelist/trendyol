@@ -1,0 +1,24 @@
+generated: '2026-07-21'
+method: generated
+source: >-
+  Generated from the documented Trendyol Marketplace / Partner API operations
+  indexed at https://developers.trendyol.com/llms.txt. Every operationId
+  referenced is real and verified against the reference index.
+api: https://developers.trendyol.com/
+skills:
+  - file: trendyol-list-a-product.md
+    name: List a product on Trendyol
+    api: https://developers.trendyol.com/reference/createproducts
+    operations: [getCategoryTree, getCategoryAttributes, getBrands, createProducts, getBatchRequestResult, updatePriceAndInventory]
+  - file: trendyol-fulfill-an-order.md
+    name: Fulfill an order package
+    api: https://developers.trendyol.com/reference/getshipmentpackages
+    operations: [getShipmentPackages, updatePackage, uploadInvoiceFile, createCommonLabel, getCommonLabel]
+  - file: trendyol-handle-a-return.md
+    name: Handle a customer return (claim)
+    api: https://developers.trendyol.com/reference/getclaims
+    operations: [getClaims, approveClaimLineItems, getClaimIssueReasons, createClaimIssue]
+  - file: trendyol-subscribe-to-webhooks.md
+    name: Subscribe to order webhooks
+    api: https://developers.trendyol.com/reference/createwebhook
+    operations: [createWebhook, getWebhooks, updateWebhook, deactivateWebhook]

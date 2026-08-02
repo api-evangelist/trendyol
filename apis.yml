@@ -1,8 +1,29 @@
 aid: trendyol
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/trendyol.png
 name: Trendyol
-description: 'Trendyol is a company surfaced as a portfolio company of bond-capital, softbank-vision-fund
-  and added to the API Evangelist network as a stub for enrichment. Sector: ecommerce. This profile is
-  a lead awaiting the enrichment pipeline.'
+description: >-
+  Trendyol is Turkey's largest e-commerce marketplace and a leading fashion and
+  retail platform operating across Türkiye, the Gulf, Azerbaijan, and Central &
+  Eastern Europe. Its Marketplace (Partner) API lets sellers and integrators
+  manage the full commerce lifecycle: product catalog with category/brand/
+  attribute data, price and stock updates, order and shipment-package
+  fulfillment, returns and claims, invoicing, settlements and financial
+  reconciliation, the Export Center, customer questions, and order webhooks.
+  Authentication is HTTP Basic (API key/secret) with a mandatory User-Agent
+  header, plus an OAuth 2.0 authorization-code flow for multi-supplier
+  integrators. Bulk writes are asynchronous and confirmed via a batchRequestId.
 url: https://raw.githubusercontent.com/api-evangelist/trendyol/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -13,16 +34,105 @@ x-tier: stub
 x-tier-reason: portfolio-lead
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-21'
 tags:
 - Company
 - Ecommerce
-apis: []
+- Marketplace
+- Retail
+- Fashion
+- Turkey
+- Order Management
+- Fulfillment
+- Logistics
+- Webhooks
+apis:
+- aid: trendyol:trendyol-marketplace-api
+  name: Trendyol Marketplace API
+  description: >-
+    The Trendyol Marketplace / Partner API for sellers and integrators — product,
+    order/shipment, returns, invoice, settlement, and webhook operations.
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  properties:
+  - type: Documentation
+    url: https://developers.trendyol.com/docs/getting-started
+  - type: APIReference
+    url: https://developers.trendyol.com/reference
+  - type: GettingStarted
+    url: https://developers.trendyol.com/docs/getting-started
+  - type: Authentication
+    url: authentication/trendyol-authentication.yml
+  - type: Conventions
+    url: conventions/trendyol-conventions.yml
+  - type: ErrorCatalog
+    url: errors/trendyol-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/trendyol-rate-limits.yml
+  - type: Lifecycle
+    url: lifecycle/trendyol-lifecycle.yml
+  - type: StatusPage
+    url: https://developers.trendyol.com/docs/api-status
+  - type: Deprecation
+    url: lifecycle/trendyol-lifecycle.yml
+  - type: ChangeLog
+    url: changelog/trendyol-changelog.yml
+  - type: Webhooks
+    url: asyncapi/trendyol-webhooks.yml
+  - type: Sandbox
+    url: sandbox/trendyol-sandbox.yml
+  - type: LLMsTxt
+    url: llms/trendyol-llms.txt
+  - type: MCPServer
+    url: mcp/trendyol-mcp.yml
+  - type: WellKnown
+    url: well-known/trendyol-well-known.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: Conformance
+    url: conformance/trendyol-conformance.yml
+  - type: DataModel
+    url: data-model/trendyol-data-model.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/trendyol-domain-security.yml
 - type: Website
   url: https://trendyol.com
+- type: DeveloperPortal
+  url: https://developers.trendyol.com/
+- type: Documentation
+  url: https://developers.trendyol.com/docs/getting-started
+- type: APIReference
+  url: https://developers.trendyol.com/reference
+- type: GettingStarted
+  url: https://developers.trendyol.com/docs/getting-started
+- type: Support
+  url: https://developers.trendyol.com/docs/support-request
+- type: StatusPage
+  url: https://developers.trendyol.com/docs/api-status
+- type: ChangeLog
+  url: https://developers.trendyol.com/changelog
+- type: Blog
+  url: https://medium.com/trendyol-tech
+- type: GitHubOrganization
+  url: https://github.com/Trendyol
+- type: Authentication
+  url: authentication/trendyol-authentication.yml
+- type: Webhooks
+  url: asyncapi/trendyol-webhooks.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: MCPServer
+  url: mcp/trendyol-mcp.yml
+- type: LLMsTxt
+  url: llms/trendyol-llms.txt
+x-enrichment:
+  date: '2026-07-21'
+  status: enriched
+  artifacts_added: 15
+  pass: local-v1

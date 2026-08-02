@@ -1,0 +1,52 @@
+generated: '2026-07-21'
+method: derived
+source: >-
+  Derived from the resource names and id-reference fields in the Trendyol
+  Marketplace / Partner API operations indexed at
+  https://developers.trendyol.com/llms.txt. Trendyol publishes no single
+  OpenAPI document; entities and relationships are inferred from the documented
+  operations and their request/response fields.
+entities:
+  - name: Supplier
+    aka: Seller
+    id: supplierId (sellerId)
+    note: Root tenant; carried in every request path.
+  - name: Product
+    id: barcode
+    keys: [productMainId, stockCode, brandId, categoryId]
+  - name: Brand
+    id: brandId
+  - name: Category
+    id: categoryId
+    note: Tree with leaf categories and category attributes.
+  - name: ShipmentPackage
+    aka: OrderPackage
+    id: shipmentPackageId (packageId)
+    keys: [orderNumber, orderLineId, cargoProviderId, warehouseId]
+  - name: Claim
+    aka: Return
+    id: claimId
+    keys: [claimItemId, claimIssueReasonId, orderNumber]
+  - name: Webhook
+    id: id
+    keys: [url, statuses]
+  - name: Settlement
+    id: id
+    note: Financial transaction (sales/return/commission/coupon).
+  - name: Invoice
+    keys: [shipmentPackageId, invoiceLink]
+  - name: Question
+    aka: Customer Q&A
+    id: id
+relationships:
+  - { from: Product, type: belongs_to, to: Supplier, via: supplierId }
+  - { from: Product, type: belongs_to, to: Brand, via: brandId }
+  - { from: Product, type: belongs_to, to: Category, via: categoryId }
+  - { from: ShipmentPackage, type: belongs_to, to: Supplier, via: supplierId }
+  - { from: ShipmentPackage, type: has_many, to: Product, via: orderLine.barcode }
+  - { from: Claim, type: belongs_to, to: ShipmentPackage, via: orderNumber }
+  - { from: Claim, type: has_many, to: Product, via: orderLineItemId }
+  - { from: Settlement, type: belongs_to, to: Supplier, via: supplierId }
+  - { from: Invoice, type: belongs_to, to: ShipmentPackage, via: shipmentPackageId }
+  - { from: Webhook, type: belongs_to, to: Supplier, via: supplierId }
+  - { from: Question, type: belongs_to, to: Product, via: barcode }

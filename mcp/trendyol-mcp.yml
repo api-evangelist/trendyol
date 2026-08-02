@@ -1,0 +1,60 @@
+generated: '2026-07-21'
+method: derived
+status: candidate
+source: >-
+  Derived from the real Trendyol Marketplace / Partner API operations indexed at
+  https://developers.trendyol.com/llms.txt. Trendyol does not operate an
+  official hosted MCP server; a third-party community server is listed on
+  mcpmarket.com/server/trendyol but is not first-party and is not endorsed here.
+description: >-
+  A candidate Model Context Protocol tool surface for the Trendyol Marketplace
+  API, mapped one-to-one from documented operations. Not published by Trendyol —
+  a starting point for an agent integration, grounded in real operationIds.
+server:
+  name: trendyol
+  transport: http
+  url: null
+  auth: HTTP Basic (API Key/Secret) + User-Agent header
+tools:
+  - name: list_shipment_packages
+    description: Retrieve order/shipment packages for a seller.
+    source_operation: getShipmentPackages
+  - name: stream_shipment_packages
+    description: Cursor-stream order packages by lastModifiedDate DESC.
+    source_operation: getShipmentPackagesStream
+  - name: update_package_status
+    description: Move an order package to Picking or Invoiced.
+    source_operation: updatePackage
+  - name: create_products
+    description: Create/list products on Trendyol (async; returns batchRequestId).
+    source_operation: createProducts
+  - name: update_price_and_inventory
+    description: Update price and stock for approved products.
+    source_operation: updatePriceAndInventory
+  - name: get_batch_request_result
+    description: Poll the result of an async batch operation.
+    source_operation: getBatchRequestResult
+  - name: get_category_tree
+    description: Fetch the category tree for product creation.
+    source_operation: getCategoryTree
+  - name: get_category_attributes
+    description: Fetch required attributes for a category.
+    source_operation: getCategoryAttributes
+  - name: get_brands
+    description: List brands for product creation.
+    source_operation: getBrands
+  - name: list_claims
+    description: Retrieve return/claim orders.
+    source_operation: getClaims
+  - name: approve_claim_line_items
+    description: Approve returned claim line items.
+    source_operation: approveClaimLineItems
+  - name: get_settlements
+    description: Retrieve settlement (sales/return/commission) transactions.
+    source_operation: getSettlements
+  - name: send_invoice_link
+    description: Send an e-invoice/e-archive link for an order package.
+    source_operation: sendInvoiceLink
+  - name: create_webhook
+    description: Create a webhook subscription for order-package events.
+    source_operation: createWebhook

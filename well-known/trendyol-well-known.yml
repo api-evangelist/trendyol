@@ -1,0 +1,40 @@
+generated: '2026-07-21'
+method: probed
+description: >-
+  Results of probing the /.well-known/ discovery surface for the Trendyol API
+  and developer hosts. No document returned a real 200 payload, so nothing was
+  saved verbatim. Absence is valid, recorded data.
+hosts:
+  - host: https://api.trendyol.com
+    documents:
+      - { path: /.well-known/security.txt, status: 556 }
+      - { path: /.well-known/openid-configuration, status: 556 }
+      - { path: /.well-known/oauth-authorization-server, status: 556 }
+      - { path: /.well-known/api-catalog, status: 556 }
+      - { path: /.well-known/ai-plugin.json, status: 556 }
+  - host: https://apigw.trendyol.com
+    documents:
+      - { path: /.well-known/security.txt, status: 556 }
+      - { path: /.well-known/openid-configuration, status: 556 }
+      - { path: /.well-known/oauth-authorization-server, status: 556 }
+      - { path: /.well-known/api-catalog, status: 556 }
+      - { path: /.well-known/ai-plugin.json, status: 556 }
+  - host: https://developers.trendyol.com
+    documents:
+      - { path: /.well-known/security.txt, status: 404 }
+      - { path: /.well-known/openid-configuration, status: 404 }
+      - { path: /.well-known/oauth-authorization-server, status: 404 }
+      - { path: /.well-known/api-catalog, status: 404 }
+      - { path: /.well-known/ai-plugin.json, status: 404 }
+  - host: https://trendyol.com
+    documents:
+      - { path: /.well-known/security.txt, status: 301 }
+      - { path: /.well-known/openid-configuration, status: 301 }
+      - { path: /.well-known/oauth-authorization-server, status: 301 }
+      - { path: /.well-known/api-catalog, status: 301 }
+      - { path: /.well-known/ai-plugin.json, status: 301 }
+note: >-
+  556 = edge/origin error returned by the api and apigw hosts for every
+  /.well-known/ path; developers host returns 404; the apex trendyol.com
+  returns 301 redirects. No OIDC/OAuth/security.txt/api-catalog document is
+  published at these locations.

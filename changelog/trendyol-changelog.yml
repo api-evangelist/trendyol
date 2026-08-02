@@ -1,0 +1,24 @@
+generated: '2026-07-21'
+method: searched
+source: https://developers.trendyol.com/changelog
+description: >-
+  Trendyol maintains a dated developer changelog for the Marketplace / Partner
+  API. The live changelog is the source of truth; this artifact records the
+  versioning scheme and the notable recent changes captured at enrichment time
+  (exact per-entry dates are not restated where not confirmed verbatim).
+docs: https://developers.trendyol.com/changelog
+versioning:
+  scheme: uri-path (product V1 vs V2, export center V2/V3, /integration gateway)
+  detail: lifecycle/trendyol-lifecycle.yml
+recent_highlights:
+  - change: Product V2 services introduced; V1 product integration deprecated.
+    breaking: true
+    sunset_date: '2026-09-15'
+    detail: Sellers must migrate product integration from V1 to V2 by 15 September 2026.
+  - change: getShipmentPackages response limited to 10,000 records.
+    breaking: false
+    detail: getShipmentPackagesStream (cursor pagination) recommended for high-volume order retrieval.
+  - change: Export Center (AutoFT) V2/V3 package listing and product endpoints published.
+    breaking: false
+  - change: Product Video create/list API published (seller-integration-video-api).
+    breaking: false

@@ -1,0 +1,97 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://developers.trendyol.com/docs (Authorization, Servis Limitleri, and
+  the per-operation reference pages indexed at
+  https://developers.trendyol.com/llms.txt). Cross-cutting request/response
+  semantics for the Trendyol Marketplace / Partner API, harvested from the docs
+  because Trendyol publishes no single OpenAPI document.
+description: >-
+  How the Trendyol Marketplace / Partner API behaves across every operation:
+  authentication, the asynchronous batch model, pagination (page-number and
+  cursor), rate-limit signalling, versioning, and the error envelope. These are
+  the runtime-semantics conventions a client or agent must follow.
+
+base_urls:
+  gateway: https://apigw.trendyol.com/integration
+  legacy: https://api.trendyol.com
+api_style: REST over HTTPS, JSON request/response (multipart form-data for file uploads)
+
+authentication:
+  scheme: 'HTTP Basic (base64 of API Key : API Secret) + mandatory User-Agent header'
+  oauth2: authorization-code flow for multi-supplier integrators
+  detail: authentication/trendyol-authentication.yml
+  docs: https://developers.trendyol.com/docs/2-authorization
+
+idempotency:
+  supported: false
+  note: >-
+    Trendyol does not offer a client-supplied idempotency key (no
+    Idempotency-Key header). It instead applies server-side duplicate
+    suppression on some write endpoints — e.g. updatePriceAndInventory rejects
+    an identical request repeated within 15 minutes. Callers achieve
+    at-most-once semantics by tracking the returned batchRequestId rather than
+    by replaying with a key.
+
+async_batch:
+  supported: true
+  description: >-
+    Bulk write operations (createProducts, updatePriceAndInventory,
+    updateContentBulk, archiveProducts, deleteProducts, export-center stock/
+    price updates, …) are asynchronous: the call returns a batchRequestId and
+    the result is polled with getBatchRequestResult (export center:
+    autoft-check-batch-status).
+  poll_operation: getBatchRequestResult
+  retention: Batch results are viewable for ~4 hours (export-center batch IDs ~24 hours).
+  max_items_per_request: 1000
+
+pagination:
+  styles:
+    - style: page-number
+      params: { page: 0-based, size: page size }
+      constraint: page * size may not exceed 10000
+      response_fields: [page, size, totalPages, totalElements, content]
+      used_by: [getShipmentPackages, getClaims, getQuestionFilter, filterApprovedProducts]
+    - style: cursor
+      params: { nextPageToken: opaque cursor }
+      description: >-
+        Cursor / stream pagination for high-volume reads; more efficient and
+        reliable than page-number paging beyond 10,000 records. Fixed ordering
+        by lastModifiedDate DESC.
+      used_by: [getShipmentPackagesStream, filterUnapprovedProducts, filterApprovedProducts]
+  docs: https://developers.trendyol.com/docs/1-servis-limitleri
+
+rate_limits:
+  default: 50 requests per 10 seconds per endpoint
+  signal_status: 429
+  signal_body_key: too.many.requests
+  per_endpoint_overrides:
+    - endpoint: getBuyboxInformation
+      limit: 1000 requests per minute
+  detail: rate-limits/trendyol-rate-limits.yml
+  docs: https://developers.trendyol.com/docs/1-servis-limitleri
+
+versioning:
+  scheme: uri-path
+  note: >-
+    Versions are carried in the URL path (product V1 vs V2, export center V2/V3,
+    and the /integration gateway prefix on apigw.trendyol.com). Product V1
+    services are being retired in favour of V2 (migration deadline 2026-09-15).
+  detail: lifecycle/trendyol-lifecycle.yml
+  changelog: changelog/trendyol-changelog.yml
+
+error_envelope:
+  media_type: application/json
+  rfc9457: false
+  shape: '{ "errors": [ { "key": "...", "message": "..." } ] }'
+  detail: errors/trendyol-problem-types.yml
+  docs: https://developers.trendyol.com/docs/hata-kodları
+
+file_uploads:
+  mechanism: multipart/form-data
+  used_by: [uploadInvoiceFile, createClaimIssue]
+
+environments:
+  production: apigw.trendyol.com (IP allow-listing may be required)
+  stage: separate stage/test environment with its own credentials
+  detail: sandbox/trendyol-sandbox.yml

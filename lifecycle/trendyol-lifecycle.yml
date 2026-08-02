@@ -1,0 +1,33 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://developers.trendyol.com/ (deprecation notices), the changelog at
+  https://developers.trendyol.com/changelog, and the API health/status page at
+  https://developers.trendyol.com/docs/api-status.
+versioning:
+  scheme: uri-path
+  note: >-
+    Versions are expressed in the URL path — product services expose V1 and V2,
+    the export center exposes V2 and V3, and the modern gateway is prefixed
+    apigw.trendyol.com/integration. There is no version request header.
+  docs: https://developers.trendyol.com/docs/getting-started
+deprecation:
+  policy_url: https://developers.trendyol.com/changelog
+  sunset_header: false
+  notes: >-
+    Deprecations are announced on the developer portal and changelog rather
+    than via RFC 8594 Sunset/Deprecation headers.
+  active_deprecations:
+    - what: Product V1 services (createProducts/updateProduct V1 and related)
+      superseded_by: Product V2 services
+      sunset_date: '2026-09-15'
+      note: Sellers must migrate product integration from V1 to V2 by 15 September 2026.
+    - what: getShipmentPackages high-volume use
+      change: Response capped at 10,000 records.
+      recommended: Use getShipmentPackagesStream (cursor pagination) for high volume.
+sla:
+  url: null
+  public_uptime_target: null
+  notes: No public numeric uptime SLA is published for the Marketplace API.
+status_page: https://developers.trendyol.com/docs/api-status
+changelog: changelog/trendyol-changelog.yml

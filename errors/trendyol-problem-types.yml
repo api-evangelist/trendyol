@@ -1,0 +1,45 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://developers.trendyol.com/docs/hata-kodları (Marketplace error-code
+  reference) plus the Authorization and Service Limits pages. Trendyol returns
+  a custom JSON error envelope rather than RFC 9457 problem+json.
+format: custom
+error_envelope:
+  media_type: application/json
+  shape: '{ "errors": [ { "key": "<error key>", "message": "<human message>" } ] }'
+  notes: >-
+    Business/validation failures on bulk operations are also surfaced per item
+    in the getBatchRequestResult response (each failed item carries a
+    failureReasons / status with a key + message), not only as a top-level HTTP
+    error.
+docs: https://developers.trendyol.com/docs/hata-kodları
+problems:
+  - status: 400
+    title: Bad request / validation error
+    detail: >-
+      Malformed request or a field that fails validation (e.g. listPrice lower
+      than salePrice, more than 1000 items in a batch, missing required
+      attribute). Returned in the errors[] envelope with a specific key.
+  - status: 401
+    key: ClientApiAuthenticationException
+    title: Authentication failed
+    detail: Missing or incorrect Basic credentials (API Key / API Secret).
+    remediation: Verify the Integration Information credentials for the environment being called.
+  - status: 403
+    title: Forbidden
+    detail: >-
+      Missing User-Agent header, calling an environment your credentials are
+      not authorized for, or a non-allow-listed source IP.
+    remediation: Send a valid User-Agent header ("{sellerId} - SelfIntegration" or "{sellerId} - {CompanyName}").
+  - status: 404
+    title: Resource not found
+    detail: Unknown supplierId, shipment package, product barcode, or claim id.
+  - status: 429
+    key: too.many.requests
+    title: Too many requests
+    detail: The endpoint rate limit (default 50 requests / 10 seconds) was exceeded.
+    remediation: Back off and retry; see rate-limits/trendyol-rate-limits.yml.
+  - status: 500
+    title: Internal server error
+    detail: Unexpected server-side failure; safe to retry idempotent reads with backoff.

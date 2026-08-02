@@ -1,0 +1,36 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://developers.trendyol.com/docs/3-canlı-test-ortam-bilgileri (live/test
+  environment info) and the STAGE test operations indexed in
+  https://developers.trendyol.com/llms.txt.
+description: >-
+  Trendyol provides a STAGE (test) environment separate from production for the
+  Marketplace / Partner API. It has its own credentials and dedicated test
+  operations for creating and driving orders, returns, and customer questions
+  so an integration can be validated end-to-end without touching real orders.
+environments:
+  production:
+    host: https://apigw.trendyol.com/integration
+    note: May require source-IP allow-listing; uses production Integration Information credentials.
+  stage:
+    note: >-
+      Separate stage environment with its own API Key / API Secret (obtained the
+      same way from Seller Center). Not a payment sandbox — there are no test
+      card numbers; instead Trendyol exposes explicit test-order operations.
+test_operations:
+  - operationId: createTestOrder
+    purpose: Create a test order in the STAGE environment for requested scenarios.
+    ref: https://developers.trendyol.com/reference/createtestorder
+  - operationId: updateTestOrderStatus
+    purpose: Advance the status of a STAGE test order to exercise the order lifecycle.
+    ref: https://developers.trendyol.com/reference/updatetestorderstatus
+  - operationId: updateTestClaimToWaitingInAction
+    purpose: Move a STAGE test return/claim into the WaitingInAction status.
+    ref: https://developers.trendyol.com/reference/updatetestclaimtowaitinginaction
+  - purpose: Create a product question in STAGE to test the customer-question (Q&A) flow.
+    ref: https://developers.trendyol.com/docs/stage-ortamda-müşteri-sorusu-oluşturma
+notes:
+  - Never invent test values; the STAGE data above is generated through the documented test operations.
+  - IP allow-listing and access details are documented on the Live/Test Environment page.
+docs: https://developers.trendyol.com/docs/3-canlı-test-ortam-bilgileri
