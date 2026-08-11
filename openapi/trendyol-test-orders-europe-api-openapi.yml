@@ -1,0 +1,249 @@
+openapi: 3.2.0
+info:
+  title: Trendyol International Test Order Test Orders - EUROPE API
+  description: Test order creation service for international test environment
+  version: 1.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/5bi5c5mkxo2o5t
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage Environment
+tags:
+- name: Test Orders - EUROPE
+  description: Test order operations for CEE regions
+paths:
+  /test/order/orders/eu:
+    post:
+      tags:
+      - Test Orders - EUROPE
+      summary: Create a Test Order For Europe
+      description: Test order creation service will be used to create test orders in scenarios requested in the STAGE environment for the CEE regions.
+      operationId: createTestOrderEurope
+      parameters:
+      - name: sellerID
+        in: header
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - customer
+              - invoiceAddress
+              - lines
+              - shippingAddress
+              properties:
+                customer:
+                  type: object
+                  required:
+                  - customerFirstName
+                  - customerLastName
+                  properties:
+                    customerFirstName:
+                      type: string
+                      description: Customer first name
+                    customerLastName:
+                      type: string
+                      description: Customer last name
+                invoiceAddress:
+                  type: object
+                  required:
+                  - addressText
+                  - city
+                  - email
+                  - invoiceFirstName
+                  - invoiceLastName
+                  - phone
+                  - postalCode
+                  properties:
+                    addressText:
+                      type: string
+                      description: Invoice address
+                    city:
+                      type: string
+                      description: City
+                    company:
+                      type: string
+                      description: Company name
+                    district:
+                      type: string
+                      description: District
+                    email:
+                      type: string
+                      description: Email address
+                    invoiceFirstName:
+                      type: string
+                      description: Invoice first name
+                    invoiceLastName:
+                      type: string
+                      description: Invoice last name
+                    latitude:
+                      type: string
+                      description: Latitude
+                    longitude:
+                      type: string
+                      description: Longitude
+                    neighborhood:
+                      type: string
+                      description: Neighborhood
+                    phone:
+                      type: string
+                      description: Phone number
+                    postalCode:
+                      type: string
+                      description: Postal code
+                    invoiceTaxNumber:
+                      type: string
+                      description: Tax number
+                    invoiceTaxOffice:
+                      type: string
+                      description: Tax office
+                lines:
+                  type: array
+                  description: Order line items. Products should be approved. discountPercentage can be used to simulate seller discounts (0 will be ignored).
+                  items:
+                    type: object
+                    required:
+                    - barcode
+                    - quantity
+                    properties:
+                      barcode:
+                        type: string
+                        description: Product barcode
+                      quantity:
+                        type: integer
+                        description: Quantity
+                      discountPercentage:
+                        type: number
+                        format: double
+                        description: Discount percentage (0 will be ignored)
+                shippingAddress:
+                  type: object
+                  required:
+                  - addressText
+                  - city
+                  - email
+                  - phone
+                  - postalCode
+                  - shippingFirstName
+                  - shippingLastName
+                  properties:
+                    addressText:
+                      type: string
+                      description: Shipping address
+                    city:
+                      type: string
+                      description: City
+                    company:
+                      type: string
+                      description: Company name
+                    district:
+                      type: string
+                      description: District
+                    email:
+                      type: string
+                      description: Email address
+                    latitude:
+                      type: string
+                      description: Latitude
+                    longitude:
+                      type: string
+                      description: Longitude
+                    neighborhood:
+                      type: string
+                      description: Neighborhood
+                    phone:
+                      type: string
+                      description: Phone number
+                    postalCode:
+                      type: string
+                      description: Postal code
+                    shippingFirstName:
+                      type: string
+                      description: Shipping first name
+                    shippingLastName:
+                      type: string
+                      description: Shipping last name
+            example:
+              shippingAddress:
+                addressText: string
+                email: string
+                phone: string
+                company: string
+                city: string
+                district: string
+                neighborhood: string
+                latitude: string
+                longitude: string
+                shippingFirstName: string
+                shippingLastName: string
+                postalCode: string
+              customer:
+                customerFirstName: string
+                customerLastName: string
+              invoiceAddress:
+                addressText: string
+                email: string
+                phone: string
+                company: string
+                city: string
+                district: string
+                neighborhood: string
+                latitude: string
+                longitude: string
+                invoiceFirstName: string
+                invoiceLastName: string
+                postalCode: string
+                invoiceTaxNumber: string
+                invoiceTaxOffice: string
+              lines:
+              - barcode: test-barcode-sevgi
+                quantity: 2
+                discountPercentage: 50
+              - barcode: test-barcode-sevgi
+                quantity: 2
+                discountPercentage: 50
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderNumber:
+                    type: string
+                    description: Created order number
+              example:
+                orderNumber: '123456789'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      security:
+      - BasicAuth: []
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: Basic authentication using seller ID sent in header

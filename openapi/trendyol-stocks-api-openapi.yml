@@ -1,0 +1,224 @@
+openapi: 3.2.0
+info:
+  title: Global Center Gateway Stocks API
+  description: 'Trendyol Global Center Gateway API - API services used for international e-export integration.
+
+
+    This API is used to manage product offers, stocks, and orders in global markets.
+
+
+    ## Required HTTP Header Fields
+
+    The following headers must be sent with all requests:
+
+
+    | Header | Type | Description |
+
+    |--------|------|-------------|
+
+    | x-correlationid | string (UUID) | Unique UUIDv4 value for each request |
+
+    | x-agentname | string | Client/integrator name making the request |
+
+    | Authorization | string | Basic Auth token |
+
+
+    ## Error Codes
+
+
+    | Code | Description |
+
+    |------|-------------|
+
+    | 1001 | An unexpected error occurred. Please contact us |
+
+    | 1002 | Required fields are missing |
+
+    | 1003 | An unexpected error occurred. Please contact us |
+
+    | 1004 | Invalid parameter entered |
+
+    | 1005 | Invalid JSON format |
+
+    | 1006 | You are not authorized to send this request |
+
+    | 1007 | Request timed out |
+
+    | 2001 | Invalid VariantID |
+
+    | 2002 | Insufficient stock |
+
+    | 2003 | Invalid OrderId |
+
+    | 2004 | This variant cannot be cancelled |
+
+    | 2005 | B2B has not been created for this Vendor Ref yet |
+
+    | 2006 | Invalid b2bId |
+
+    | 2007 | Invalid PartnerId |
+
+    | 2008 | Invalid OrderId |
+
+    | 2009 | This variant cannot be cancelled |
+
+    '
+  version: 1.0.0
+  contact:
+    name: Trendyol Global Platform Support
+    email: globalplatform@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/c4c15ml67qlde
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration/exportcentergw
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration/exportcentergw
+  description: Stage Environment
+security:
+- basicAuth: []
+tags:
+- name: Stocks
+  description: Stock query operations
+paths:
+  /v1/stocks:
+    get:
+      tags:
+      - Stocks
+      summary: Get Stocks
+      description: 'Retrieves stock information for specified variant IDs.
+
+
+        Stock information is shown separately for Trendyol and seller warehouses.
+
+        '
+      operationId: gcgw-get-stocks
+      parameters:
+      - name: variantIds
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          maxItems: 20
+        description: Variant ID list. Maximum 20 items
+        example:
+        - '166158629'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StockInfo'
+              example:
+              - variantId: '166158629'
+                availableQuantity: 20
+                warehouses:
+                  trendyol:
+                    quantity: 13
+                  seller:
+                    quantity: 7
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                modelValidation:
+                  summary: Model Validation Exception
+                  value:
+                    status: 400
+                    type: ModelValidationException
+                    traceId: '312321312321312312'
+                    error:
+                      code: 1002
+                      title: Error
+                      detail: 'Validation failed for request: {VariantIds:[]}, with error: VariantIds is a required field'
+                stockNotAvailable:
+                  summary: Stock Not Available Exception
+                  value:
+                    status: 400
+                    type: StockNotAvailableException
+                    traceId: 18ba3be2-e6c0-413e-91eb-fb7c05573bd9
+                    error:
+                      code: 2002
+                      title: Error
+                      detail: 'Stock not available for some variants, errorMessages : [Stock Not Available for VariantId: 69128041, WarehouseTag: null.]'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+        type:
+          type: string
+          description: Error type
+        traceId:
+          type: string
+          description: Trace ID
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              description: Error code
+            title:
+              type: string
+              description: Error title
+            detail:
+              type: string
+              description: Error detail
+    StockInfo:
+      type: object
+      properties:
+        variantId:
+          type: string
+          description: Variant ID
+        availableQuantity:
+          type: integer
+          description: Total available stock
+        warehouses:
+          type: object
+          properties:
+            trendyol:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  description: Stock in Trendyol warehouse
+            seller:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  description: Stock in seller warehouse
+  responses:
+    Unauthorized:
+      description: Unauthorized - Authentication error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 401
+            type: UnauthorizedException
+            traceId: ''
+            error:
+              code: 1006
+              title: Error
+              detail: You are not authorized to send this request
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Basic Auth with API Key and Secret

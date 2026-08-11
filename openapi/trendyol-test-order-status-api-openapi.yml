@@ -1,0 +1,172 @@
+openapi: 3.2.0
+info:
+  title: Trendyol International Test Order Test Order Status API
+  description: Test order creation service for international test environment
+  version: 1.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/5bi5c5mkxo2o5t
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage Environment
+tags:
+- name: Test Order Status
+  description: Test order status operations
+paths:
+  /test/order/sellers/{sellerId}/shipment-packages/{packageId}/status:
+    put:
+      tags:
+      - Test Order Status
+      summary: Status Updates on Test Orders
+      description: You can update the statuses of orders you placed in the stage environment to perform your test scenarios.
+      operationId: updateTestOrderStatus
+      parameters:
+      - name: sellerID
+        in: header
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - lines
+              - status
+              properties:
+                lines:
+                  type: array
+                  description: Order lines
+                  items:
+                    type: object
+                    required:
+                    - lineId
+                    - quantity
+                    properties:
+                      lineId:
+                        type: integer
+                        format: int64
+                        description: Line ID
+                      quantity:
+                        type: integer
+                        description: Quantity
+                params:
+                  type: object
+                  description: Additional parameters
+                  additionalProperties:
+                    type: string
+                status:
+                  type: string
+                  description: 'Status to update. The statuses progress sequentially.
+
+
+                    - Shipped: The package has been shipped
+
+                    - Delivered: The package has arrived at the delivery point
+
+                    - UnDelivered: The package could not be delivered (the cargo has returned to the distribution center)
+
+                    - Returned: Package sent back
+
+                    '
+                  enum:
+                  - Shipped
+                  - Delivered
+                  - UnDelivered
+                  - Returned
+            example:
+              lines:
+              - lineId: 4944785
+                quantity: 1
+              params: {}
+              status: Delivered
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 200 OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      security:
+      - BasicAuth: []
+  /test/order/sellers/{sellerId}/claims/waiting-in-action:
+    put:
+      tags:
+      - Test Order Status
+      summary: Return Test Orders to WaitingInAction Status
+      description: You can use the service below to notify the return status to the waitinginaction.
+      operationId: updateTestClaimToWaitingInAction
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - shipmentPackageId
+              properties:
+                shipmentPackageId:
+                  type: integer
+                  format: int64
+                  description: It corresponds to the "orderShipmentPackageId" value returned from the getClaims service
+            example:
+              shipmentPackageId: 56526451
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 200 OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      security:
+      - BasicAuth: []
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: Basic authentication using seller ID sent in header

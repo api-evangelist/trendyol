@@ -1,0 +1,116 @@
+openapi: 3.2.0
+info:
+  title: Trendyol International Marketplace - Product Integration Brands API
+  description: 'Trendyol International Marketplace product integration API services for non-TR sellers. Covers product creation (V2), filtering, updating, deletion, archiving, stock-price updating, buybox, unlock, and batch request tracking services.
+
+    '
+  version: 2.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/yzfuk0mqjeocod
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage
+security:
+- basicAuth: []
+tags:
+- name: Brands
+  description: Brand listing services
+paths:
+  /product/brands:
+    get:
+      tags:
+      - Brands
+      summary: Brand List (getBrands)
+      description: 'The brandId to be sent in createProduct requests is retrieved using this service. A minimum of 1000 brand records can be retrieved per page.
+
+        '
+      operationId: getBrands
+      parameters:
+      - name: page
+        in: query
+        description: Page number indicating which page of brands to retrieve
+        schema:
+          type: integer
+      - name: size
+        in: query
+        description: Number of brands to include in a single response
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandsResponse'
+              example:
+                brands:
+                - id: 10
+                  name: TrendyolMilla
+                - id: 19
+                  name: Milla
+                - id: 20
+                  name: Trendyol
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /product/brands/by-name:
+    get:
+      tags:
+      - Brands
+      summary: Brand Search (getBrandsByName)
+      description: Search brands by name. Note that the search is case-sensitive.
+      operationId: getBrandsByName
+      parameters:
+      - name: name
+        in: query
+        required: true
+        description: Brand name to search for (case-sensitive)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Brand'
+              example:
+              - id: 40
+                name: TRENDYOLMİLLA
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  schemas:
+    Brand:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    BrandsResponse:
+      type: object
+      properties:
+        brands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Brand'
+  responses:
+    Unauthorized:
+      description: One of supplierID, API Key, or API Secret Key is missing or incorrect.
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication - Enter your API Key as the Username and API Secret Key as the Password. These credentials can be obtained from Trendyol Seller Panel > My Account > Integration Information. A User-Agent header is required for all requests (format: "SellerId - IntegratorCompanyName" or "SellerId - SelfIntegration").'
+x-readme:
+  proxy-enabled: false

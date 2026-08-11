@@ -1,0 +1,511 @@
+openapi: 3.2.0
+info:
+  title: Global Center Gateway Orders API
+  description: 'Trendyol Global Center Gateway API - API services used for international e-export integration.
+
+
+    This API is used to manage product offers, stocks, and orders in global markets.
+
+
+    ## Required HTTP Header Fields
+
+    The following headers must be sent with all requests:
+
+
+    | Header | Type | Description |
+
+    |--------|------|-------------|
+
+    | x-correlationid | string (UUID) | Unique UUIDv4 value for each request |
+
+    | x-agentname | string | Client/integrator name making the request |
+
+    | Authorization | string | Basic Auth token |
+
+
+    ## Error Codes
+
+
+    | Code | Description |
+
+    |------|-------------|
+
+    | 1001 | An unexpected error occurred. Please contact us |
+
+    | 1002 | Required fields are missing |
+
+    | 1003 | An unexpected error occurred. Please contact us |
+
+    | 1004 | Invalid parameter entered |
+
+    | 1005 | Invalid JSON format |
+
+    | 1006 | You are not authorized to send this request |
+
+    | 1007 | Request timed out |
+
+    | 2001 | Invalid VariantID |
+
+    | 2002 | Insufficient stock |
+
+    | 2003 | Invalid OrderId |
+
+    | 2004 | This variant cannot be cancelled |
+
+    | 2005 | B2B has not been created for this Vendor Ref yet |
+
+    | 2006 | Invalid b2bId |
+
+    | 2007 | Invalid PartnerId |
+
+    | 2008 | Invalid OrderId |
+
+    | 2009 | This variant cannot be cancelled |
+
+    '
+  version: 1.0.0
+  contact:
+    name: Trendyol Global Platform Support
+    email: globalplatform@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/c4c15ml67qlde
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration/exportcentergw
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration/exportcentergw
+  description: Stage Environment
+security:
+- basicAuth: []
+tags:
+- name: Orders
+  description: Order creation, cancellation, and query operations
+paths:
+  /v1/orders:
+    post:
+      tags:
+      - Orders
+      summary: Create Order
+      description: 'Creates a new order.
+
+
+        **Important Notes:**
+
+        - Items array can contain maximum 100 products
+
+        - requestedQuantity must be greater than 0
+
+        - vendorRef must be in unique UUIDv4 format for each order
+
+        '
+      operationId: gcgw-create-order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+            example:
+              items:
+              - variantId: '166158629'
+                requestedQuantity: 10
+              - variantId: '166158630'
+                requestedQuantity: 5
+              vendorRef: fdaf6307-4409-4398-a326-61378b2b4bb2
+              addressTitle: yourAddressTitle
+      responses:
+        '200':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOrderResponse'
+              example:
+                items:
+                - cancelable: true
+                  lineItems:
+                  - cancelable: true
+                    quantity: 15
+                    warehouseType: warehouseType
+                  quantity: 15
+                  variantId: '166158629'
+                createDateTime: '2022-09-27T11:11:26.4099061Z'
+                orderNumber: '20001234234'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 400
+                type: ModelValidationException
+                traceId: '312321312321312312'
+                error:
+                  code: 1002
+                  title: Error
+                  detail: 'Validation failed for request: {VendorRef:Not UUID V4 Items:[{VariantId:1001 RequestedQuantity:0} {VariantId:testVariantId RequestedQuantity:0}]}, with error: VendorRef must be a valid version 4 UUID, RequestedQuantity must be greater than 0'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/orders/{orderNumber}/cancel:
+    post:
+      tags:
+      - Orders
+      summary: Cancel Order
+      description: 'Cancels an existing order or specific products within an order.
+
+
+        **Important Notes:**
+
+        - Items array can contain maximum 100 products
+
+        - quantity specifies the quantity to be cancelled
+
+        - Only products in cancellable status can be cancelled
+
+        '
+      operationId: gcgw-cancel-order
+      parameters:
+      - name: orderNumber
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Order number to be cancelled
+        example: 7e871bf9-de1a-4f4c-b1f5-443e77231fb0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelOrderRequest'
+            example:
+              items:
+              - quantity: 2
+                variantId: '482858333'
+      responses:
+        '200':
+          description: Order cancelled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                orderNotSuitable:
+                  summary: Order Status Not Suitable
+                  value:
+                    status: 400
+                    type: OrderNotSuitableForCancelException
+                    traceId: f3a72afa-e829-419b-b6aa-5ad715295ddd
+                    error:
+                      code: 2004
+                      title: Error
+                      detail: 'Order not suitable for cancel these variantIds : [string]'
+                orderNotFound:
+                  summary: Order Not Found
+                  value:
+                    status: 404
+                    type: OrderNotFoundException
+                    traceId: c44c2de5-5af6-4012-b761-5564653e1ffd
+                    error:
+                      code: 2003
+                      title: Error
+                      detail: 'Order not found for orderId : 32423423423'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/orders/vendorRefs/{B2BId}:
+    get:
+      tags:
+      - Orders
+      summary: Get VendorRefs By B2BId
+      description: 'Retrieves the VendorRef list for the specified B2B ID.
+
+
+        This endpoint returns all order references associated with a B2B ID.
+
+        '
+      operationId: gcgw-get-vendor-refs-by-b2b-id
+      parameters:
+      - name: B2BId
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: B2B ID number
+        example: 1001
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorRefsByB2BIdResponse'
+              example:
+                b2BId: 1001
+                invoiceNumber: INT2022000000001
+                vendorRefSummaries:
+                - orderId: orderId1
+                  vendorRef: vendorRef1
+                  creationDate: '2022-09-27T11:11:26Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 400
+                type: StatusBadRequest
+                traceId: ''
+                error:
+                  code: 0
+                  title: ''
+                  detail: b2bId not valid
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/orders/{vendorRef}/b2bs:
+    get:
+      tags:
+      - Orders
+      summary: Get B2Bs By VendorRef
+      description: 'Retrieves the B2B list for the specified VendorRef.
+
+
+        This endpoint returns all B2B information associated with a VendorRef.
+
+        '
+      operationId: gcgw-get-b2bs-by-vendor-ref
+      parameters:
+      - name: vendorRef
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Vendor reference code
+        example: vendorRef1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/B2BsByVendorRefResponse'
+              example:
+                vendorRef: vendorRef1
+                b2bSummaries:
+                - b2BId: b2BId1
+                  invoiceNumber: INT2022000000001
+                  warehouseId: warehouseId1
+                  warehouseName: warehouseName1
+                  createDate: '2022-09-27T11:11:26Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 400
+                type: StatusBadRequest
+                traceId: ''
+                error:
+                  code: 0
+                  title: ''
+                  detail: vendorRef not found
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+        type:
+          type: string
+          description: Error type
+        traceId:
+          type: string
+          description: Trace ID
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              description: Error code
+            title:
+              type: string
+              description: Error title
+            detail:
+              type: string
+              description: Error detail
+    CreateOrderRequest:
+      type: object
+      required:
+      - items
+      - vendorRef
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          description: Order items (maximum 100)
+          items:
+            type: object
+            required:
+            - variantId
+            - requestedQuantity
+            properties:
+              variantId:
+                type: string
+                description: Variant ID
+              requestedQuantity:
+                type: integer
+                minimum: 1
+                description: Requested quantity (must be greater than 0)
+              warehouseTag:
+                type: string
+                description: Warehouse tag (optional)
+        vendorRef:
+          type: string
+          format: uuid
+          description: Unique UUIDv4 reference code for each order
+        addressTitle:
+          type: string
+          description: Address title (optional, used for communication with account manager)
+    CreateOrderResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              cancelable:
+                type: boolean
+                description: Is cancelable
+              lineItems:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    cancelable:
+                      type: boolean
+                    quantity:
+                      type: integer
+                    warehouseType:
+                      type: string
+              quantity:
+                type: integer
+                description: Total quantity
+              variantId:
+                type: string
+                description: Variant ID
+        createDateTime:
+          type: string
+          format: date-time
+          description: Order creation time
+        orderNumber:
+          type: string
+          description: Order number
+    CancelOrderRequest:
+      type: object
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          description: Products to be cancelled (maximum 100)
+          items:
+            type: object
+            required:
+            - quantity
+            - variantId
+            properties:
+              quantity:
+                type: integer
+                minimum: 1
+                description: Quantity to be cancelled
+              variantId:
+                type: string
+                description: Variant ID of the product to be cancelled
+    B2BsByVendorRefResponse:
+      type: object
+      properties:
+        vendorRef:
+          type: string
+          description: Vendor reference code
+        b2bSummaries:
+          type: array
+          items:
+            type: object
+            properties:
+              b2BId:
+                type: string
+                description: B2B ID
+              invoiceNumber:
+                type: string
+                description: Invoice number
+              warehouseId:
+                type: string
+                description: Warehouse ID
+              warehouseName:
+                type: string
+                description: Warehouse name
+              createDate:
+                type: string
+                format: date-time
+                description: Creation date
+    VendorRefsByB2BIdResponse:
+      type: object
+      properties:
+        b2BId:
+          type: integer
+          description: B2B ID
+        invoiceNumber:
+          type: string
+          description: Invoice number
+        vendorRefSummaries:
+          type: array
+          items:
+            type: object
+            properties:
+              orderId:
+                type: string
+                description: Order ID
+              vendorRef:
+                type: string
+                description: Vendor reference code
+              creationDate:
+                type: string
+                format: date-time
+                description: Creation date
+  responses:
+    Unauthorized:
+      description: Unauthorized - Authentication error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 401
+            type: UnauthorizedException
+            traceId: ''
+            error:
+              code: 1006
+              title: Error
+              detail: You are not authorized to send this request
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Basic Auth with API Key and Secret

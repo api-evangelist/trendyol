@@ -50,8 +50,8 @@ apis:
 - aid: trendyol:trendyol-marketplace-api
   name: Trendyol Marketplace API
   description: >-
-    The Trendyol Marketplace / Partner API for sellers and integrators — product,
-    order/shipment, returns, invoice, settlement, and webhook operations.
+    The Trendyol Marketplace / Partner API for sellers and integrators — product, order/shipment, returns,
+    invoice, settlement, and webhook operations.
   humanURL: https://developers.trendyol.com/
   baseURL: https://apigw.trendyol.com/integration
   properties:
@@ -93,6 +93,387 @@ apis:
     url: conformance/trendyol-conformance.yml
   - type: DataModel
     url: data-model/trendyol-data-model.yml
+- aid: trendyol:trendyol-address-information-api
+  name: Trendyol Address Information API
+  description: Country, city, district and neighborhood information
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Address Information
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-address-information-api-openapi.yml
+- aid: trendyol:trendyol-batchrequests-api
+  name: Trendyol Batch Requests API
+  description: Batch request tracking services
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - BatchRequests
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-batchrequests-api-openapi.yml
+- aid: trendyol:trendyol-brands-api
+  name: Trendyol Brands API
+  description: Brand listing services
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Brands
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-brands-api-openapi.yml
+- aid: trendyol:trendyol-cargo-invoice-api
+  name: Trendyol Cargo Invoice API
+  description: Cargo invoice detail operations
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Cargo Invoice
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-cargo-invoice-api-openapi.yml
+- aid: trendyol:trendyol-categories-api
+  name: Trendyol Categories API
+  description: Category, attribute, and attribute value services
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Categories
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-categories-api-openapi.yml
+- aid: trendyol:trendyol-common-label-barcode-create-integration-api
+  name: Trendyol Common Label Barcode Create Integration API
+  description: >-
+    The Common Label Barcode Create Integration API from Trendyol — 1 operation(s) for common label barcode
+    create integration.
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Common Label Barcode Create Integration
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-common-label-barcode-create-integration-api-openapi.yml
+- aid: trendyol:trendyol-common-label-barcode-get-integration-api
+  name: Trendyol Common Label Barcode Get Integration API
+  description: >-
+    The Common Label Barcode Get Integration API from Trendyol — 1 operation(s) for common label barcode
+    get integration.
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Common Label Barcode Get Integration
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-common-label-barcode-get-integration-api-openapi.yml
+- aid: trendyol:trendyol-compensation-listing-integration-api
+  name: Trendyol Compensation Listing Integration API
+  description: >-
+    The Compensation Listing Integration API from Trendyol — 1 operation(s) for compensation listing integration.
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Compensation Listing Integration
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-compensation-listing-integration-api-openapi.yml
+- aid: trendyol:trendyol-customer-question-integration-api
+  name: Trendyol Customer Question Integration API
+  description: Operations for listing, filtering, and answering customer questions.
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Customer Question Integration
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-customer-question-integration-api-openapi.yml
+- aid: trendyol:trendyol-fiyat-entegrasyonu-api
+  name: Trendyol Fiyat Entegrasyonu API
+  description: Fiyat güncelleme işlemleri
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Fiyat Entegrasyonu
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-fiyat-entegrasyonu-api-openapi.yml
+- aid: trendyol:trendyol-i-lem-sonu-entegrasyonu-api
+  name: Trendyol İşlem Sonuç Entegrasyonu API
+  description: Batch ID ile işlem sonucu sorgulama
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - İşlem Sonuç Entegrasyonu
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-i-lem-sonu-entegrasyonu-api-openapi.yml
+- aid: trendyol:trendyol-international-invoice-file-management-api
+  name: Trendyol International Invoice File Management API
+  description: Invoice file upload operations for GULF markets
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - International Invoice File Management
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-international-invoice-file-management-api-openapi.yml
+- aid: trendyol:trendyol-international-invoice-link-management-api
+  name: Trendyol International Invoice Link Management API
+  description: Invoice link sending and deletion operations for GULF markets
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - International Invoice Link Management
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-international-invoice-link-management-api-openapi.yml
+- aid: trendyol:trendyol-inventory-api
+  name: Trendyol Inventory API
+  description: Stock and price update services
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Inventory
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-inventory-api-openapi.yml
+- aid: trendyol:trendyol-offers-api
+  name: Trendyol Offers API
+  description: Product offers and content media operations
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Offers
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-offers-api-openapi.yml
+- aid: trendyol:trendyol-order-integration-api
+  name: Trendyol Order Integration API
+  description: Order package management and delivery operations
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Order Integration
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-order-integration-api-openapi.yml
+- aid: trendyol:trendyol-orders-api
+  name: Trendyol Orders API
+  description: Order creation, cancellation, and query operations
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Orders
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-orders-api-openapi.yml
+- aid: trendyol:trendyol-other-financials-api
+  name: Trendyol Other Financials API
+  description: >-
+    Supplier financing, transfers, payments, invoices, incoming transfers, commission reconciliation invoices
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Other Financials
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-other-financials-api-openapi.yml
+- aid: trendyol:trendyol-paket-entegrasyonu-api
+  name: Trendyol Paket Entegrasyonu API
+  description: Paket listeleme ve detay işlemleri
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Paket Entegrasyonu
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-paket-entegrasyonu-api-openapi.yml
+- aid: trendyol:trendyol-products-api
+  name: Trendyol Products API
+  description: Product creation, filtering, deletion, archiving, buybox, and unlock services
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Products
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-products-api-openapi.yml
+- aid: trendyol:trendyol-r-n-entegrasyonu-api
+  name: Trendyol Ürün Entegrasyonu API
+  description: Ürün oluşturma ve listeleme işlemleri
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Ürün Entegrasyonu
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-r-n-entegrasyonu-api-openapi.yml
+- aid: trendyol:trendyol-r-n-lookup-api
+  name: Trendyol Ürün Lookup API
+  description: Menşei, materyal bileşenleri, yıkama talimatları ve kategori bilgileri
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Ürün Lookup
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-r-n-lookup-api-openapi.yml
+- aid: trendyol:trendyol-returned-orders-integration-api
+  name: Trendyol Returned Orders Integration API
+  description: Return operations and management
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Returned Orders Integration
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-returned-orders-integration-api-openapi.yml
+- aid: trendyol:trendyol-returned-orders-integration-europe-api
+  name: Trendyol Returned Orders Integration - EUROPE API
+  description: >-
+    Return operations and management for Europe (CEE) region. Note GULF and EUROPE regions use the same
+    API endpoints, differentiated by the storeFrontCode header parameter.
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Returned Orders Integration - EUROPE
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-returned-orders-integration-europe-api-openapi.yml
+- aid: trendyol:trendyol-returned-orders-integration-gulf-api
+  name: Trendyol Returned Orders Integration - GULF API
+  description: >-
+    Return operations and management for GULF region. Note GULF and EUROPE regions use the same API endpoints,
+    differentiated by the storeFrontCode header parameter. The path suffixes shown here are for documentation
+    organization only.
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Returned Orders Integration - GULF
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-returned-orders-integration-gulf-api-openapi.yml
+- aid: trendyol:trendyol-settlements-api
+  name: Trendyol Settlements API
+  description: Sales, returns, discounts, coupons, provisions
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Settlements
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-settlements-api-openapi.yml
+- aid: trendyol:trendyol-shipping-alternative-delivery-api
+  name: Trendyol Shipping Alternative Delivery API
+  description: Alternative delivery methods and manual delivery/return operations
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Shipping Alternative Delivery
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-shipping-alternative-delivery-api-openapi.yml
+- aid: trendyol:trendyol-split-order-package-api
+  name: Trendyol Split Order Package API
+  description: Package splitting operations
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Split Order Package
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-split-order-package-api-openapi.yml
+- aid: trendyol:trendyol-stocks-api
+  name: Trendyol Stocks API
+  description: Stock query operations
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Stocks
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-stocks-api-openapi.yml
+- aid: trendyol:trendyol-stok-entegrasyonu-api
+  name: Trendyol Stok Entegrasyonu API
+  description: Stok güncelleme işlemleri
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Stok Entegrasyonu
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-stok-entegrasyonu-api-openapi.yml
+- aid: trendyol:trendyol-supplier-information-integration-api
+  name: Trendyol Supplier Information Integration API
+  description: Supplier address information and cargo company information
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Supplier Information Integration
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-supplier-information-integration-api-openapi.yml
+- aid: trendyol:trendyol-test-order-status-api
+  name: Trendyol Test Order Status API
+  description: Test order status operations
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Test Order Status
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-test-order-status-api-openapi.yml
+- aid: trendyol:trendyol-test-orders-api
+  name: Trendyol Test Orders API
+  description: Test order operations
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Test Orders
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-test-orders-api-openapi.yml
+- aid: trendyol:trendyol-test-orders-europe-api
+  name: Trendyol Test Orders - EUROPE API
+  description: Test order operations for CEE regions
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Test Orders - EUROPE
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-test-orders-europe-api-openapi.yml
+- aid: trendyol:trendyol-test-orders-gulf-api
+  name: Trendyol Test Orders - GULF API
+  description: Test order operations for GULF region (SA, AE)
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Test Orders - GULF
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-test-orders-gulf-api-openapi.yml
+- aid: trendyol:trendyol-updates-api
+  name: Trendyol Updates API
+  description: Product update services (approved/unapproved)
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Updates
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-updates-api-openapi.yml
+- aid: trendyol:trendyol-webhook-api
+  name: Trendyol Webhook API
+  description: Webhook creation, listing, and update operations
+  humanURL: https://developers.trendyol.com/
+  baseURL: https://apigw.trendyol.com/integration
+  tags:
+  - Webhook
+  properties:
+  - type: OpenAPI
+    url: openapi/trendyol-webhook-api-openapi.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
