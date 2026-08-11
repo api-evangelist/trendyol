@@ -1,0 +1,266 @@
+openapi: 3.2.0
+info:
+  title: Trendyol Marketplace Integration Address Information API
+  description: API for Trendyol Domestic Marketplace Order and Return Integration
+  version: 1.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/on76bmnoawy6i
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage Environment
+security:
+- basicAuth: []
+tags:
+- name: Address Information
+  description: Country, city, district and neighborhood information
+paths:
+  /member/countries:
+    get:
+      tags:
+      - Address Information
+      summary: Country Information
+      description: You can get the country information from the below service.
+      operationId: getCountries
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    code:
+                      type: string
+                    name:
+                      type: string
+        '401':
+          description: Unauthorized
+  /member/countries/{CountryCode}/cities:
+    get:
+      tags:
+      - Address Information
+      summary: Get Cities for GULF and CEE Countries
+      description: You can get the city information for the GULF and CEE region from the below service.
+      operationId: getCitiesByCountry
+      parameters:
+      - name: CountryCode
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Country code from countries endpoint
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '401':
+          description: Unauthorized
+  /member/countries/{CountryCode}/cities/{cityId}/districts:
+    get:
+      tags:
+      - Address Information
+      summary: Get Districts for GULF Countries
+      description: You can get the district information for the GULF countries from the below service.
+      operationId: getDistrictsByCity
+      parameters:
+      - name: CountryCode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: cityId
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: City ID from cities endpoint
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '401':
+          description: Unauthorized
+  /member/countries/domestic/AZ/cities:
+    get:
+      tags:
+      - Address Information
+      summary: Get Cities for Azerbaijan
+      description: You can get the city information for the Azerbaijan from the below service.
+      operationId: getAzerbaijanCities
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '401':
+          description: Unauthorized
+  /member/countries/domestic/AZ/cities/{cityCode}/districts:
+    get:
+      tags:
+      - Address Information
+      summary: Get Districts for Azerbaijan
+      description: You can get the district information for the Azerbaijan from the below service.
+      operationId: getAzerbaijanDistricts
+      parameters:
+      - name: cityCode
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: City code from Azerbaijan cities endpoint
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '401':
+          description: Unauthorized
+  /member/countries/domestic/TR/cities:
+    get:
+      tags:
+      - Address Information
+      summary: Get Cities for Turkey
+      description: You can get the city information for the Turkey from the below service.
+      operationId: getTurkeyCities
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '401':
+          description: Unauthorized
+  /member/countries/domestic/TR/cities/{CityCode}/districts:
+    get:
+      tags:
+      - Address Information
+      summary: Get Districts for Turkey
+      description: You can get the district information for the Turkey from the below service.
+      operationId: getTurkeyDistricts
+      parameters:
+      - name: CityCode
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: City code from Turkey cities endpoint
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '401':
+          description: Unauthorized
+  /member/countries/domestic/TR/cities/{CityCode}/districts/{DistrictCode}/neighborhoods:
+    get:
+      tags:
+      - Address Information
+      summary: Get Neighborhoods for Turkey
+      description: You can get the neighborhood information for the Turkey from the below service.
+      operationId: getTurkeyNeighborhoods
+      parameters:
+      - name: CityCode
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: City code from Turkey cities endpoint
+      - name: DistrictCode
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: District code from Turkey districts endpoint
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '401':
+          description: Unauthorized
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Seller API Key and API Secret with Basic Auth
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Bearer token authentication

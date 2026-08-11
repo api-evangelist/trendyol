@@ -1,0 +1,132 @@
+openapi: 3.2.0
+info:
+  title: Trendyol International Marketplace - Product Integration Inventory API
+  description: 'Trendyol International Marketplace product integration API services for non-TR sellers. Covers product creation (V2), filtering, updating, deletion, archiving, stock-price updating, buybox, unlock, and batch request tracking services.
+
+    '
+  version: 2.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/yzfuk0mqjeocod
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage
+security:
+- basicAuth: []
+tags:
+- name: Inventory
+  description: Stock and price update services
+paths:
+  /inventory/sellers/{sellerId}/products/price-and-inventory:
+    post:
+      tags:
+      - Inventory
+      summary: Stock and Price Update (updatePriceAndInventory)
+      description: 'Updates the price and stock information of products that have been transferred to and approved by Trendyol. You cannot send the same request repeatedly for 15 minutes. Maximum 1,000 items, maximum 20,000 stock per product.
+
+        '
+      operationId: updatePriceAndInventory
+      parameters:
+      - $ref: '#/components/parameters/sellerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PriceAndInventoryRequest'
+      responses:
+        '200':
+          description: Request has been queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchRequestResponse'
+              example:
+                batchRequestId: fa75dfd5-6ce6-4730-a09e-97563500000-1529854840
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              message:
+                type: string
+              errorCode:
+                type: string
+    PriceAndInventoryItem:
+      type: object
+      required:
+      - barcode
+      properties:
+        barcode:
+          type: string
+        quantity:
+          type: integer
+        salePrice:
+          type: number
+        listPrice:
+          type: number
+    PriceAndInventoryRequest:
+      type: object
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/PriceAndInventoryItem'
+    BatchRequestResponse:
+      type: object
+      properties:
+        batchRequestId:
+          type: string
+  responses:
+    InternalServerError:
+      description: A temporary error may have occurred. Please wait a few minutes.
+    BadRequest:
+      description: Missing or invalid parameter in the URL.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: One of supplierID, API Key, or API Secret Key is missing or incorrect.
+    NotFound:
+      description: The request URL is invalid.
+  parameters:
+    sellerId:
+      name: sellerId
+      in: path
+      required: true
+      description: Seller ID
+      schema:
+        type: integer
+        format: int64
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication - Enter your API Key as the Username and API Secret Key as the Password. These credentials can be obtained from Trendyol Seller Panel > My Account > Integration Information. A User-Agent header is required for all requests (format: "SellerId - IntegratorCompanyName" or "SellerId - SelfIntegration").'
+x-readme:
+  proxy-enabled: false
