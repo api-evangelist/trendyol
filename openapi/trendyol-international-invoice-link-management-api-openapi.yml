@@ -1,0 +1,247 @@
+openapi: 3.2.0
+info:
+  title: International Invoice Integration International Invoice Link Management API
+  description: API for Trendyol International (GULF) Seller Invoice Integration - e-Invoice and e-Archive invoice management for Saudi Arabia and United Arab Emirates
+  version: 1.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/1xydy8bml6ga7jl
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage Environment
+security:
+- basicAuth: []
+- apiKeyAuth: []
+tags:
+- name: International Invoice Link Management
+  description: Invoice link sending and deletion operations for GULF markets
+paths:
+  /sellers/{sellerId}/seller-invoice-links:
+    post:
+      tags:
+      - International Invoice Link Management
+      summary: Send Customer Invoice Link - sendInvoiceLink
+      description: 'Suppliers can send the order''s invoice link to Trendyol via this method for international orders in GULF markets.
+
+
+        **LEGAL OBLIGATION**: Invoice links sent with this service must be accessible for:
+
+        - **10 years in Saudi Arabia** as required by law
+
+        - **5 years in United Arab Emirates** as required by law
+
+
+        ### Usage
+
+        - This simplified version is designed for international markets (GULF region)
+
+        - Only requires invoice link and shipment package ID (no invoice number or date fields)
+
+
+        ### Important Notes
+
+        - The invoice link must remain accessible for the legally required duration
+
+        - Each shipment package can have only one invoice link
+
+        - Once submitted, the link can be deleted and resubmitted if needed
+
+        '
+      operationId: sendInvoiceLink
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceLinkRequest'
+            example:
+              invoiceLink: https://extfatura.faturaentegratoru.com/324523-34523-52345-3453245.pdf
+              shipmentPackageId: 435346
+      responses:
+        '201':
+          description: Success - Invoice link successfully saved
+        '400':
+          description: Bad Request - Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized - Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Conflict - This error occurs in two situations:
+
+            1. An invoice for the submitted ShipmentPackageId may have already been fed
+
+            2. The submitted link may have already been fed to another ShipmentPackageId before
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /sellers/{sellerId}/seller-invoice-links/delete:
+    post:
+      tags:
+      - International Invoice Link Management
+      summary: Delete Invoice Link - deleteInvoiceLink
+      description: 'Invoices that were updated incorrectly before can be deleted through this service and sent again through the send invoice link service.
+
+
+        ### Usage
+
+        - serviceSourceId: represents the shipmentPackageId value
+
+        - channelId: Should always be sent as 1
+
+        - customerId: Can be checked on get order packages service
+
+
+        ### Use Case
+
+        This service allows you to correct mistakes by deleting an incorrectly submitted invoice link and resubmitting the correct one.
+
+        '
+      operationId: deleteInvoiceLink
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceLinkDeleteRequest'
+            example:
+              serviceSourceId: 88787
+              channelId: 1
+              customerId: 167878
+      responses:
+        '202':
+          description: Accepted - Invoice link deletion request accepted
+        '400':
+          description: Bad Request - Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized - Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found - Specified invoice link not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    InvoiceLinkDeleteRequest:
+      type: object
+      required:
+      - serviceSourceId
+      - channelId
+      - customerId
+      properties:
+        serviceSourceId:
+          type: integer
+          format: int64
+          description: Order package ID (shipmentPackageId)
+          example: 88787
+        channelId:
+          type: integer
+          description: Channel ID - Should always be sent as 1
+          enum:
+          - 1
+          default: 1
+          example: 1
+        customerId:
+          type: integer
+          format: int64
+          description: Customer ID - Can be obtained from get order packages service
+          example: 167878
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error code or type
+          example: CONFLICT
+        message:
+          type: string
+          description: Error message detail
+          example: An invoice for the submitted ShipmentPackageId has already been fed
+        timestamp:
+          type: integer
+          format: int64
+          description: Error timestamp (Unix timestamp)
+        path:
+          type: string
+          description: Endpoint where the error occurred
+        status:
+          type: integer
+          description: HTTP status code
+    InvoiceLinkRequest:
+      type: object
+      required:
+      - invoiceLink
+      - shipmentPackageId
+      properties:
+        invoiceLink:
+          type: string
+          format: uri
+          description: 'e-Invoice or e-Archive invoice link for international orders.
+
+
+            **Legal Requirements:**
+
+            - Must be accessible for 10 years in Saudi Arabia
+
+            - Must be accessible for 5 years in United Arab Emirates
+
+
+            This is a simplified version for GULF markets - no invoice number or date fields required.
+
+            '
+          example: https://extfatura.faturaentegratoru.com/324523-34523-52345-3453245.pdf
+        shipmentPackageId:
+          type: integer
+          format: int64
+          description: Trendyol order package ID for international order
+          example: 435346
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Seller API Key and API Secret with Basic Auth
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Bearer token authentication

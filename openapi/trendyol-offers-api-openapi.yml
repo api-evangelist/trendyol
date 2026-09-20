@@ -1,0 +1,499 @@
+openapi: 3.2.0
+info:
+  title: Global Center Gateway Offers API
+  description: 'Trendyol Global Center Gateway API - API services used for international e-export integration.
+
+
+    This API is used to manage product offers, stocks, and orders in global markets.
+
+
+    ## Required HTTP Header Fields
+
+    The following headers must be sent with all requests:
+
+
+    | Header | Type | Description |
+
+    |--------|------|-------------|
+
+    | x-correlationid | string (UUID) | Unique UUIDv4 value for each request |
+
+    | x-agentname | string | Client/integrator name making the request |
+
+    | Authorization | string | Basic Auth token |
+
+
+    ## Error Codes
+
+
+    | Code | Description |
+
+    |------|-------------|
+
+    | 1001 | An unexpected error occurred. Please contact us |
+
+    | 1002 | Required fields are missing |
+
+    | 1003 | An unexpected error occurred. Please contact us |
+
+    | 1004 | Invalid parameter entered |
+
+    | 1005 | Invalid JSON format |
+
+    | 1006 | You are not authorized to send this request |
+
+    | 1007 | Request timed out |
+
+    | 2001 | Invalid VariantID |
+
+    | 2002 | Insufficient stock |
+
+    | 2003 | Invalid OrderId |
+
+    | 2004 | This variant cannot be cancelled |
+
+    | 2005 | B2B has not been created for this Vendor Ref yet |
+
+    | 2006 | Invalid b2bId |
+
+    | 2007 | Invalid PartnerId |
+
+    | 2008 | Invalid OrderId |
+
+    | 2009 | This variant cannot be cancelled |
+
+    '
+  version: 1.0.0
+  contact:
+    name: Trendyol Global Platform Support
+    email: globalplatform@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/c4c15ml67qlde
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration/exportcentergw
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration/exportcentergw
+  description: Stage Environment
+security:
+- basicAuth: []
+tags:
+- name: Offers
+  description: Product offers and content media operations
+paths:
+  /v1/offers:
+    get:
+      tags:
+      - Offers
+      summary: Get Offers
+      description: 'Lists product offers. Provides access to product information with various filters.
+
+
+        Filtering parameters are optional and can be used together.
+
+        '
+      operationId: gcgw-get-offers
+      parameters:
+      - name: modelNo
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Model code that groups variants. Maximum 100 items
+        example: TWOSS22EL00791
+      - name: variantIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          maxItems: 100
+        description: Unique number identifying the product. Maximum 100 items
+        example:
+        - '482858333'
+      - name: barcodes
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Product barcode
+        example:
+        - '8682165254195'
+      - name: lastModifiedDateFrom
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Last modification date start (RFC3339 format)
+        example: '2022-08-22T12:00:29Z'
+      - name: lastModifiedDateTo
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Last modification date end (RFC3339 format)
+        example: '2022-08-22T12:02:29Z'
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 20
+          maximum: 100
+        description: Number of records per page
+        example: 20
+      - name: pageKey
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Next page key
+        example: '1'
+      - name: tags
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Search by tags (can be multiple)
+        example:
+        - bestSeller
+      - name: language
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - EN
+          - TR
+          - PL
+          - AR
+          - DE
+          - FR
+          - NL
+        description: Language code
+        example: EN
+      - name: active
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Are offers active?
+        example: true
+      - name: brandId
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Brand ID (e.g., 40 = TrendyolMilla)
+        example: 40
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OffersResponse'
+              example:
+                offers:
+                - variantId: '482858333'
+                  modelNo: TWOSS22EL00791
+                  barcode: '8682165254195'
+                  title: Green Basic Knit T-Shirt
+                  description: Basic cut knit t-shirt
+                  brandId: 40
+                  brandName: TrendyolMilla
+                  categoryId: 1234
+                  categoryName: T-Shirt
+                  gender: Women
+                  color: Green
+                  size: M
+                  attributes:
+                  - name: Fabric
+                    value: Cotton
+                  - name: Fit
+                    value: Regular
+                  prices:
+                    listPrice: 199.99
+                    salePrice: 149.99
+                    currency: EUR
+                  images:
+                  - url: https://cdn.dsmcdn.com/ty517/product/media/images/example.jpg
+                    order: 1
+                  active: true
+                  tags:
+                  - bestSeller
+                  lastModifiedDate: '2022-08-22T12:01:00Z'
+                pageKey: '2'
+                totalCount: 150
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/offers/content-medias:
+    get:
+      tags:
+      - Offers
+      summary: Get Offer Content Medias
+      description: 'Retrieves media content (images, size charts, etc.) for product offers.
+
+
+        Queries media information by Content IDs.
+
+        '
+      operationId: gcgw-get-offer-content-medias
+      parameters:
+      - name: contentIds
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+        description: Unique number that groups variants
+        example:
+        - '302684358'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentMediasResponse'
+              example:
+                content_medias:
+                - content_id: '302684358'
+                  sizeCharts:
+                    de: https://cdn.dsmcdn.com/ty596/product/charts/languages/tr/categories/2962/brands/1262112/dd2b3197.jpg
+                    en: https://cdn.dsmcdn.com/ty596/product/charts/languages/tr/categories/2962/brands/1262112/dd2b3198.jpg
+                    tr: https://cdn.dsmcdn.com/ty596/product/charts/languages/tr/categories/2962/brands/1262112/dd2b3199.jpg
+                  medias:
+                  - order: 1
+                    is_hidden: false
+                    is_human: true
+                    url: https://cdn.dsmcdn.com/ty516/product/media/images/20220824/14/165032750/482058333/2/2_org_zoom.jpg
+                    url_size_2000_x_2000: https://media-center-image-processor-s3.s3.eu-central-1.amazonaws.com/GP/ty516/product/media/images/example_2000x2000.jpg
+                    url_white_bg: ''
+                    url_size_1500_x_2000: https://media-center-image-processor-s3.s3.eu-central-1.amazonaws.com/GP/ty516/product/media/images/example_1500x2000.jpg
+                  - order: 2
+                    is_hidden: false
+                    is_human: true
+                    url: https://cdn.dsmcdn.com/ty517/product/media/images/20220824/14/165032750/482058333/3/3_org_zoom.jpg
+                    url_size_2000_x_2000: https://media-center-image-processor-s3.s3.eu-central-1.amazonaws.com/GP/ty517/product/media/images/example2_2000x2000.jpg
+                    url_white_bg: ''
+                    url_size_1500_x_2000: https://media-center-image-processor-s3.s3.eu-central-1.amazonaws.com/GP/ty517/product/media/images/example2_1500x2000.jpg
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+        type:
+          type: string
+          description: Error type
+        traceId:
+          type: string
+          description: Trace ID
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              description: Error code
+            title:
+              type: string
+              description: Error title
+            detail:
+              type: string
+              description: Error detail
+    OffersResponse:
+      type: object
+      properties:
+        offers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Offer'
+        pageKey:
+          type: string
+          description: Next page key
+        totalCount:
+          type: integer
+          description: Total record count
+    ContentMedia:
+      type: object
+      properties:
+        content_id:
+          type: string
+          description: Content ID
+        sizeCharts:
+          type: object
+          description: Size chart URLs by language
+          additionalProperties:
+            type: string
+        medias:
+          type: array
+          items:
+            $ref: '#/components/schemas/Media'
+    Offer:
+      type: object
+      properties:
+        variantId:
+          type: string
+          description: Variant ID
+        modelNo:
+          type: string
+          description: Model number
+        barcode:
+          type: string
+          description: Barcode
+        title:
+          type: string
+          description: Product title
+        description:
+          type: string
+          description: Product description
+        brandId:
+          type: integer
+          description: Brand ID
+        brandName:
+          type: string
+          description: Brand name
+        categoryId:
+          type: integer
+          description: Category ID
+        categoryName:
+          type: string
+          description: Category name
+        gender:
+          type: string
+          description: Gender
+        color:
+          type: string
+          description: Color
+        size:
+          type: string
+          description: Size
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              value:
+                type: string
+        prices:
+          type: object
+          properties:
+            listPrice:
+              type: number
+              format: double
+              description: List price
+            salePrice:
+              type: number
+              format: double
+              description: Sale price
+            currency:
+              type: string
+              description: Currency
+        images:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                description: Image URL
+              order:
+                type: integer
+                description: Order
+        active:
+          type: boolean
+          description: Is active
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags
+        lastModifiedDate:
+          type: string
+          format: date-time
+          description: Last modified date
+    Media:
+      type: object
+      properties:
+        order:
+          type: integer
+          description: Image order
+        is_hidden:
+          type: boolean
+          description: Is hidden
+        is_human:
+          type: boolean
+          description: Has human model
+        url:
+          type: string
+          description: Original image URL
+        url_size_2000_x_2000:
+          type: string
+          description: 2000x2000 sized image URL
+        url_white_bg:
+          type: string
+          description: White background image URL
+        url_size_1500_x_2000:
+          type: string
+          description: 1500x2000 sized image URL
+    ContentMediasResponse:
+      type: object
+      properties:
+        content_medias:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentMedia'
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 400
+            type: HttpClientApiCallException
+            traceId: ''
+            error:
+              code: 1003
+              title: Error
+              detail: Your request could not be success
+    Unauthorized:
+      description: Unauthorized - Authentication error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 401
+            type: UnauthorizedException
+            traceId: ''
+            error:
+              code: 1006
+              title: Error
+              detail: You are not authorized to send this request
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Basic Auth with API Key and Secret

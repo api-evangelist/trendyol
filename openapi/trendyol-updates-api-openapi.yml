@@ -1,0 +1,387 @@
+openapi: 3.2.0
+info:
+  title: Trendyol International Marketplace - Product Integration Updates API
+  description: 'Trendyol International Marketplace product integration API services for non-TR sellers. Covers product creation (V2), filtering, updating, deletion, archiving, stock-price updating, buybox, unlock, and batch request tracking services.
+
+    '
+  version: 2.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/yzfuk0mqjeocod
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage
+security:
+- basicAuth: []
+tags:
+- name: Updates
+  description: Product update services (approved/unapproved)
+paths:
+  /product/sellers/{sellerId}/products/unapproved-bulk-update:
+    post:
+      tags:
+      - Updates
+      summary: Product Update - Unapproved Products (updateUnapprovedProducts)
+      description: 'Updates unapproved products in your Trendyol store. The maximum number of items per request is 1,000.
+
+        '
+      operationId: updateUnapprovedProducts
+      parameters:
+      - $ref: '#/components/parameters/sellerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUnapprovedRequest'
+      responses:
+        '200':
+          description: Request has been queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /product/sellers/{sellerId}/products/content-bulk-update:
+    post:
+      tags:
+      - Updates
+      summary: Product Update - Approved Content (updateContentBulk)
+      description: 'Updates the content information of approved products. Partial update is supported except for attribute values. If any attribute is to be updated, all attributes and their values must be sent. Maximum 1,000 items per request.
+
+        '
+      operationId: updateContentBulk
+      parameters:
+      - $ref: '#/components/parameters/sellerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentBulkUpdateRequest'
+      responses:
+        '200':
+          description: Request has been queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /product/sellers/{sellerId}/products/variant-bulk-update:
+    post:
+      tags:
+      - Updates
+      summary: Product Update - Approved Variant (updateVariantBulk)
+      description: 'Updates the variant information of approved products. All fields except the barcode field can be updated. Partial update is not supported. Maximum 1,000 items.
+
+        '
+      operationId: updateVariantBulk
+      parameters:
+      - $ref: '#/components/parameters/sellerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VariantBulkUpdateRequest'
+      responses:
+        '200':
+          description: Request has been queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /product/sellers/{sellerId}/products/delivery-info-bulk-update:
+    post:
+      tags:
+      - Updates
+      summary: Product Update - Delivery Information (updateDeliveryInfoBulk)
+      description: 'Updates the delivery information of approved products. All fields except the barcode field can be updated. Maximum 1,000 items.
+
+        '
+      operationId: updateDeliveryInfoBulk
+      parameters:
+      - $ref: '#/components/parameters/sellerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryInfoBulkUpdateRequest'
+      responses:
+        '200':
+          description: Request has been queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              message:
+                type: string
+              errorCode:
+                type: string
+    VariantBulkUpdateRequest:
+      type: object
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/VariantUpdateItem'
+    ProductAttribute:
+      type: object
+      required:
+      - attributeId
+      properties:
+        attributeId:
+          type: integer
+        attributeValueIds:
+          type: array
+          items:
+            type: integer
+        attributeValue:
+          type: string
+    DeliveryOption:
+      type: object
+      properties:
+        deliveryDuration:
+          type: integer
+        fastDeliveryType:
+          type: string
+          enum:
+          - SAME_DAY_SHIPPING
+          - FAST_DELIVERY
+    UpdateUnapprovedRequest:
+      type: object
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/UpdateUnapprovedItem'
+    ContentBulkUpdateRequest:
+      type: object
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/ContentUpdateItem'
+    DeliveryInfoUpdateItem:
+      type: object
+      required:
+      - barcode
+      properties:
+        barcode:
+          type: string
+        deliveryOptions:
+          type: object
+          properties:
+            deliveryDuration:
+              type: integer
+            fastDeliveryType:
+              type: string
+              enum:
+              - SAME_DAY_SHIPPING
+              - FAST_DELIVERY
+    DeliveryInfoBulkUpdateRequest:
+      type: object
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/DeliveryInfoUpdateItem'
+    ContentUpdateItem:
+      type: object
+      required:
+      - contentId
+      properties:
+        contentId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        images:
+          type: array
+          maxItems: 8
+          items:
+            $ref: '#/components/schemas/ProductImage'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductAttribute'
+    UpdateUnapprovedItem:
+      type: object
+      required:
+      - barcode
+      properties:
+        barcode:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        productMainId:
+          type: string
+        brandId:
+          type: integer
+        categoryId:
+          type: integer
+        stockCode:
+          type: string
+        dimensionalWeight:
+          type: number
+        vatRate:
+          type: integer
+        deliveryOption:
+          $ref: '#/components/schemas/DeliveryOption'
+        locationBasedDelivery:
+          type:
+          - string
+          - 'null'
+          enum:
+          - ENABLED
+          - DISABLED
+        lotNumber:
+          type:
+          - string
+          - 'null'
+        shipmentAddressId:
+          type: integer
+        returningAddressId:
+          type: integer
+        images:
+          type: array
+          maxItems: 8
+          items:
+            $ref: '#/components/schemas/ProductImage'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductAttribute'
+    VariantUpdateItem:
+      type: object
+      required:
+      - barcode
+      properties:
+        barcode:
+          type: string
+        stockCode:
+          type: string
+        vatRate:
+          type: integer
+        shipmentAddressId:
+          type: integer
+        returningAddressId:
+          type: integer
+        dimensionalWeight:
+          type: number
+        lotNumber:
+          type:
+          - string
+          - 'null'
+        locationBasedDelivery:
+          type:
+          - string
+          - 'null'
+          enum:
+          - ENABLED
+          - DISABLED
+    ProductImage:
+      type: object
+      required:
+      - url
+      properties:
+        url:
+          type: string
+    BatchRequestResponse:
+      type: object
+      properties:
+        batchRequestId:
+          type: string
+  responses:
+    InternalServerError:
+      description: A temporary error may have occurred. Please wait a few minutes.
+    BadRequest:
+      description: Missing or invalid parameter in the URL.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: One of supplierID, API Key, or API Secret Key is missing or incorrect.
+    NotFound:
+      description: The request URL is invalid.
+  parameters:
+    sellerId:
+      name: sellerId
+      in: path
+      required: true
+      description: Seller ID
+      schema:
+        type: integer
+        format: int64
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication - Enter your API Key as the Username and API Secret Key as the Password. These credentials can be obtained from Trendyol Seller Panel > My Account > Integration Information. A User-Agent header is required for all requests (format: "SellerId - IntegratorCompanyName" or "SellerId - SelfIntegration").'
+x-readme:
+  proxy-enabled: false

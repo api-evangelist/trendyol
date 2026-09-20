@@ -1,0 +1,187 @@
+openapi: 3.2.0
+info:
+  title: International Invoice Integration International Invoice File Management API
+  description: API for Trendyol International (GULF) Seller Invoice Integration - e-Invoice and e-Archive invoice management for Saudi Arabia and United Arab Emirates
+  version: 1.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/1xydy8bml6ga7jl
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage Environment
+security:
+- basicAuth: []
+- apiKeyAuth: []
+tags:
+- name: International Invoice File Management
+  description: Invoice file upload operations for GULF markets
+paths:
+  /sellers/{sellerId}/seller-invoice-file:
+    post:
+      tags:
+      - International Invoice File Management
+      summary: Send Customer Invoice File - uploadInvoiceFile
+      description: 'Allows sellers to upload invoice files (PDF, JPEG, PNG) for international order packages in GULF markets.
+
+
+        ### Important Requirements
+
+        - **Header Parameter Required**: You must include "storeFrontCode" in the request headers
+
+        - The file size cannot exceed 10 MB
+
+        - A future-dated invoice cannot be added
+
+        - Supported file formats: PDF, JPEG, PNG
+
+
+        ### Error Situations
+
+        - If the shipment package belongs to another seller: "The shipment package does not belong to the specified seller. sellerId: X"
+
+        - When trying to upload to a package that already has an invoice: "The invoice for the package number {paketNO} has already been sent"
+
+        - If package not found: "The shipment package with the ID {paketNO} could not be found"
+
+        - Invalid file format: "File type (.txt) is not supported. Supported file types: application/pdf, image/jpeg, image/png"
+
+        - If file not sent: "File not sent. Please select the invoice file and try again"
+
+
+        ### Request Format
+
+        There is no JSON request body. You must send the following as form-data:
+
+        - shipmentPackageId: as form-data (Text)
+
+        - file: as form-data (File) - PDF, JPEG, or PNG
+
+
+        ### Header Parameter
+
+        - storeFrontCode: Required header parameter identifying the store front
+
+        '
+      operationId: uploadInvoiceFile
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code - Required header parameter for international invoice file upload
+        example: SA
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - shipmentPackageId
+              - file
+              properties:
+                shipmentPackageId:
+                  type: integer
+                  format: int64
+                  description: Order package ID (required)
+                file:
+                  type: string
+                  format: binary
+                  description: Invoice file (PDF, JPEG, or PNG format, maximum 10 MB)
+            encoding:
+              file:
+                contentType: application/pdf, image/jpeg, image/png
+      responses:
+        '200':
+          description: Success - Invoice file successfully uploaded
+        '201':
+          description: Created - Invoice file successfully created
+        '400':
+          description: 'Bad Request - Invalid request parameters. Possible errors:
+
+            - File size exceeds 10 MB
+
+            - Future-dated invoice
+
+            - Invalid file format
+
+            - File not sent
+
+            - Missing storeFrontCode header
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized - Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - Shipment package does not belong to specified seller
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found - Specified package ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict - Invoice already sent for this package
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error code or type
+          example: CONFLICT
+        message:
+          type: string
+          description: Error message detail
+          example: An invoice for the submitted ShipmentPackageId has already been fed
+        timestamp:
+          type: integer
+          format: int64
+          description: Error timestamp (Unix timestamp)
+        path:
+          type: string
+          description: Endpoint where the error occurred
+        status:
+          type: integer
+          description: HTTP status code
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Seller API Key and API Secret with Basic Auth
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Bearer token authentication

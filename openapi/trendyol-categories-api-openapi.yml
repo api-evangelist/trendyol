@@ -1,0 +1,208 @@
+openapi: 3.2.0
+info:
+  title: Trendyol International Marketplace - Product Integration Categories API
+  description: 'Trendyol International Marketplace product integration API services for non-TR sellers. Covers product creation (V2), filtering, updating, deletion, archiving, stock-price updating, buybox, unlock, and batch request tracking services.
+
+    '
+  version: 2.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/yzfuk0mqjeocod
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage
+security:
+- basicAuth: []
+tags:
+- name: Categories
+  description: Category, attribute, and attribute value services
+paths:
+  /product/product-categories:
+    get:
+      tags:
+      - Categories
+      summary: Category List (getCategoryTree)
+      description: 'The categoryId to be sent in createProduct requests is retrieved using this service. The lowest-level (leaf) category ID must be used. The category tree is updated periodically; it is recommended to fetch the latest list on a weekly basis.
+
+        '
+      operationId: getCategoryTree
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+              example:
+              - id: 1162
+                name: Atkı & Bere & Eldiven
+                parentId: 368
+                subCategories:
+                - id: 382
+                  name: Atkı
+                  parentId: 1162
+                  subCategories: []
+                - id: 384
+                  name: Bere
+                  parentId: 1162
+                  subCategories: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /product/categories/{categoryId}/attributes:
+    get:
+      tags:
+      - Categories
+      summary: Category Attribute List (getCategoryAttributes)
+      description: 'The attributes information to be sent in the Product Creation request is retrieved using this service. The allowMultipleAttributeValues field indicates whether multiple values are supported. The lowest-level (leaf) category ID must be used.
+
+        '
+      operationId: getCategoryAttributes
+      parameters:
+      - name: categoryId
+        in: path
+        required: true
+        description: Trendyol category ID
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryAttributesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /product/categories/{categoryId}/attributes/{attributeId}/values:
+    get:
+      tags:
+      - Categories
+      summary: Category Attribute Values List (getCategoryAttributeValues)
+      description: 'The attribute values information to be sent in the Product Creation request is retrieved using this service.
+
+        '
+      operationId: getCategoryAttributeValues
+      parameters:
+      - name: categoryId
+        in: path
+        required: true
+        description: Trendyol category ID
+        schema:
+          type: integer
+      - name: attributeId
+        in: path
+        required: true
+        description: Attribute ID
+        schema:
+          type: integer
+      - name: page
+        in: query
+        description: Page number (max 1000)
+        schema:
+          type: integer
+          maximum: 1000
+      - name: size
+        in: query
+        description: Maximum number of items per page (max 1000)
+        schema:
+          type: integer
+          maximum: 1000
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeValuesPageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        parentId:
+          type: integer
+        subCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    AttributeValueItem:
+      type: object
+      properties:
+        attributeValueId:
+          type: integer
+        attributeValueName:
+          type: string
+    CategoryAttribute:
+      type: object
+      properties:
+        allowCustom:
+          type: boolean
+        attribute:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        categoryId:
+          type: integer
+        required:
+          type: boolean
+        varianter:
+          type: boolean
+        slicer:
+          type: boolean
+        allowMultipleAttributeValues:
+          type: boolean
+    AttributeValuesPageResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        page:
+          type: integer
+        size:
+          type: integer
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeValueItem'
+    CategoryAttributesResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        displayName:
+          type: string
+        categoryAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryAttribute'
+  responses:
+    Unauthorized:
+      description: One of supplierID, API Key, or API Secret Key is missing or incorrect.
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication - Enter your API Key as the Username and API Secret Key as the Password. These credentials can be obtained from Trendyol Seller Panel > My Account > Integration Information. A User-Agent header is required for all requests (format: "SellerId - IntegratorCompanyName" or "SellerId - SelfIntegration").'
+x-readme:
+  proxy-enabled: false

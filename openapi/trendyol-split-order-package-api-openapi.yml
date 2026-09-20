@@ -1,0 +1,329 @@
+openapi: 3.2.0
+info:
+  title: Trendyol Split Order Package API
+  version: 1.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  description: 'Operations tagged Split Order Package across 2 of this provider''s published API definitions: openapi-domestic.yml, openapi-international.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage Environment
+tags:
+- name: Split Order Package
+  description: Package splitting operations
+paths:
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/split-packages:
+    post:
+      tags:
+      - Split Order Package
+      summary: Split Order Packages with Multiple Barcodes - splitMultiPackageByQuantity
+      description: With this method, you can split the products included in an order package with the quantity and orderLineId value of the relevant barcode in the package.
+      operationId: splitMultiPackagesByQuantity
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - splitPackages
+              properties:
+                splitPackages:
+                  type: array
+                  description: Array of package groups to create
+                  items:
+                    type: object
+                    required:
+                    - packageDetails
+                    properties:
+                      packageDetails:
+                        type: array
+                        description: Order lines with quantities to include in this package
+                        items:
+                          type: object
+                          required:
+                          - orderLineId
+                          - quantities
+                          properties:
+                            orderLineId:
+                              type: integer
+                              format: int64
+                              description: Order line ID
+                            quantities:
+                              type: integer
+                              minimum: 1
+                              description: Quantity for this order line
+            example:
+              splitPackages:
+              - packageDetails:
+                - orderLineId: 12345
+                  quantities: 2
+                - orderLineId: 123456
+                  quantities: 1
+              - packageDetails:
+                - orderLineId: 123
+                  quantities: 1
+                - orderLineId: 1234
+                  quantities: 1
+      responses:
+        '200':
+          description: Success - New packages will be created asynchronously
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/split:
+    post:
+      tags:
+      - Split Order Package
+      summary: Split Shipment Package - splitShipmentPackage
+      description: After using this service, new packages depending on the order number will be generated asynchronously.
+      operationId: splitShipmentPackage
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - orderLineIds
+              properties:
+                orderLineIds:
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
+                  description: Order line IDs to split into new package
+            example:
+              orderLineIds:
+              - 123456789
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  newPackageId:
+                    type: integer
+                    format: int64
+                    description: Newly created package ID
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/quantity-split:
+    post:
+      tags:
+      - Split Order Package
+      summary: Split Packages Based On Barcode - splitShipmentPackageByQuantity
+      description: After using this service, new packages depending on the order number will be generated asynchronously.
+      operationId: splitShipmentPackageByQuantity
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - quantitySplit
+              properties:
+                quantitySplit:
+                  type: array
+                  description: Quantity split requests for each order line
+                  items:
+                    type: object
+                    required:
+                    - orderLineId
+                    - quantities
+                    properties:
+                      orderLineId:
+                        type: integer
+                        format: int64
+                        description: Order line ID to split
+                      quantities:
+                        type: array
+                        description: Array of quantities to split into separate packages
+                        items:
+                          type: integer
+                          minimum: 1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  newPackageIds:
+                    type: array
+                    description: Array of newly created package IDs
+                    items:
+                      type: integer
+                      format: int64
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/multi-split:
+    post:
+      tags:
+      - Split Order Package
+      summary: Split Multiple Packages - multiSplitShipmentPackage
+      description: After using this service, new packages depending on the order number will be generated asynchronously.
+      operationId: multiSplitShipmentPackage
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - splitGroups
+              properties:
+                splitGroups:
+                  type: array
+                  description: Groups of order line IDs to split into separate packages
+                  items:
+                    type: object
+                    required:
+                    - orderLineIds
+                    properties:
+                      orderLineIds:
+                        type: array
+                        description: Order line IDs to group together in a new package
+                        items:
+                          type: integer
+                          format: int64
+            example:
+              splitGroups:
+              - orderLineIds:
+                - 3
+                - 5
+                - 6
+              - orderLineIds:
+                - 7
+                - 8
+                - 9
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        newPackageId:
+                          type: integer
+                          format: int64
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Seller API Key and API Secret with Basic Auth
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Bearer token authentication
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: Use your Trendyol API credentials
+x-refined-from:
+- openapi-domestic.yml
+- openapi-international.yml
