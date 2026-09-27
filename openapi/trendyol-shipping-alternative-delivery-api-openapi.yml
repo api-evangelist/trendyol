@@ -1,0 +1,419 @@
+openapi: 3.2.0
+info:
+  title: Trendyol Shipping Alternative Delivery API
+  version: 1.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  description: 'Operations tagged Shipping Alternative Delivery across 2 of this provider''s published API definitions: openapi-domestic.yml, openapi-international.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage Environment
+tags:
+- name: Shipping Alternative Delivery
+  description: Alternative delivery methods and manual delivery/return operations
+paths:
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/alternative-delivery:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Shipping with Cargo Link - processAlternativeDelivery
+      description: After sending the order package, you can feed it with the cargo tracking link or phone number you have. After successfully submitting this request, the order will automatically switch to "Shipped" status.
+      operationId: processAlternativeDelivery
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - isPhoneNumber
+              - trackingInfo
+              - params
+              properties:
+                isPhoneNumber:
+                  type: boolean
+                  description: If false, trackingInfo should be a cargo tracking link. If true, trackingInfo should be a phone number.
+                  example: false
+                trackingInfo:
+                  type: string
+                  description: Cargo tracking link (if isPhoneNumber is false) or phone number (if isPhoneNumber is true)
+                  example: http://tex....
+                params:
+                  type: object
+                  description: Additional parameters
+                  additionalProperties:
+                    type: string
+                  example: {}
+                boxQuantity:
+                  type: integer
+                  description: The quantity of the package (optional)
+                  example: 1
+                deci:
+                  type: number
+                  format: float
+                  description: The deci of the package (optional)
+                  example: 1.4
+            example:
+              isPhoneNumber: false
+              trackingInfo: http://tex....
+              params: {}
+              boxQuantity: 1
+              deci: 1.4
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/alternative-delivery-digital:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Digital Product Delivery with Alternative Delivery - processAlternativeDelivery
+      description: When you call this service, the information you provide will be automatically sent to customers via sms and e-mail.
+      operationId: processAlternativeDeliveryDigital
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - isPhoneNumber
+              - trackingInfo
+              - params
+              properties:
+                isPhoneNumber:
+                  type: boolean
+                  description: Should be true for digital product delivery
+                  example: true
+                trackingInfo:
+                  type: string
+                  description: Contact phone number for customer
+                  example: '5555555555'
+                params:
+                  type: object
+                  description: Additional parameters including digital code
+                  required:
+                  - digitalCode
+                  properties:
+                    digitalCode:
+                      type: string
+                      description: Digital code must be between 6-120 characters
+                      minLength: 6
+                      maxLength: 120
+                      example: AX4567fasdf
+            example:
+              isPhoneNumber: true
+              trackingInfo: '5555555555'
+              params:
+                digitalCode: AX4567fasdf
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/manual-invoice-delivery:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Delivery by Package Id - manualDeliverByPackageId
+      description: Manual delivery notification by package ID
+      operationId: manualDeliverByPackageId
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/shipment-packages/manual-invoice-delivery-by-tracking-number/{cargoTrackingNumber}:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Delivery by Tracking Number - manualDeliverByTrackingNumber
+      description: Manual delivery notification by cargo tracking number
+      operationId: manualDeliverByTrackingNumber
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: cargoTrackingNumber
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/shipment-packages/manual-return-by-tracking-number/{cargoTrackingNumber}:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Return by Tracking Number - manualReturnByTrackingNumber
+      description: You can use this service for orders that are returned to your warehouse in the case of "shipped" status and cannot be delivered to the customer, and therefore cannot be transferred to "delivered" status.
+      operationId: manualReturnByTrackingNumber
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: cargoTrackingNumber
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/manual-return:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Return by Package Id - manualReturnByPackageId
+      description: You can use this service for orders that are returned to your warehouse in the case of "shipped" status and cannot be delivered to the customer, and therefore cannot be transferred to "delivered" status.
+      operationId: manualReturnByPackageId
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/manual-deliver/{cargoTrackingNumber}:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Delivery by Tracking Number
+      description: Change package status to delivered using cargo tracking number. For packages sent by alternate delivery (ADEL).
+      operationId: manualDeliverByTrackingNumber
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: cargoTrackingNumber
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Cargo tracking number
+      responses:
+        '200':
+          description: Package delivered successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/manual-deliver:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Delivery by Package Number
+      description: Change package status to delivered using package ID. For packages sent by alternate delivery (ADEL).
+      operationId: manualDeliverByPackageId
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      responses:
+        '200':
+          description: Package delivered successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+  /order/sellers/{sellerId}/manual-return/{cargoTrackingNumber}:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Return by Tracking Number
+      description: Change package status to returned using cargo tracking number. For undelivered packages sent by alternate delivery (ADEL).
+      operationId: manualReturnByTrackingNumber
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: cargoTrackingNumber
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Cargo tracking number
+      responses:
+        '200':
+          description: Package returned successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+    servers:
+    - url: https://apigw.trendyol.com/integration
+      description: Production Environment
+    - url: https://stageapigw.trendyol.com/integration
+      description: Stage Environment
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Seller API Key and API Secret with Basic Auth
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Bearer token authentication
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: Use your Trendyol API credentials
+x-refined-from:
+- openapi-domestic.yml
+- openapi-international.yml

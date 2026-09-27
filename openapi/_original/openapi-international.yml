@@ -1,0 +1,3706 @@
+openapi: 3.0.3
+info:
+  title: Trendyol International Marketplace Integration
+  description: API for Trendyol International Marketplace Order Integration
+  version: 1.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/g3cj88emnoazibu
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage Environment
+tags:
+- name: Order Integration
+  description: Order package management and delivery operations
+- name: Split Order Package
+  description: Package splitting operations
+- name: Shipping Alternative Delivery
+  description: Alternative delivery methods for GULF region
+- name: Returned Orders Integration - EUROPE
+  description: Return operations and management for Europe (CEE) region. Note GULF and EUROPE regions
+    use the same API endpoints, differentiated by the storeFrontCode header parameter.
+- name: Returned Orders Integration - GULF
+  description: Return operations and management for GULF region. Note GULF and EUROPE regions use the
+    same API endpoints, differentiated by the storeFrontCode header parameter. The path suffixes shown
+    here are for documentation organization only.
+paths:
+  /order/sellers/{sellerId}/orders:
+    get:
+      tags:
+      - Order Integration
+      summary: Get Shipment Packages
+      description: This method allows you to retrieve information about each customer order for the products
+        you have listed on the Trendyol system. Maximum of 1000 requests per minute. Can query up to three
+        months retrospectively.
+      operationId: getShipmentPackages
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      - name: startDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        description: Start date (Unix timestamp in milliseconds)
+      - name: endDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        description: End date (Unix timestamp in milliseconds)
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+        description: Page number
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          maximum: 200
+        description: Page size (maximum 200)
+      - name: orderNumber
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by order number
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - Created
+          - Picking
+          - Invoiced
+          - Shipped
+          - Cancelled
+          - Delivered
+          - UnDelivered
+          - Returned
+          - AtCollectionPoint
+          - UnSupplied
+          - Awaiting
+        description: Filter by package status
+      - name: orderByField
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - PackageLastModifiedDate
+        description: Order by field
+      - name: orderByDirection
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+        description: Order direction (ASC for old to new, DESC for new to old)
+      - name: shipmentPackageIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filter by specific shipment package IDs
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalElements:
+                    type: integer
+                    description: Total number of elements
+                  totalPages:
+                    type: integer
+                    description: Total number of pages
+                  page:
+                    type: integer
+                    description: Current page number
+                  size:
+                    type: integer
+                    description: Number of items per page
+                  content:
+                    type: array
+                    items:
+                      type: object
+                      description: Shipment package details
+                      properties:
+                        shipmentAddress:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              format: int64
+                              description: Address ID
+                            firstName:
+                              type: string
+                              description: First name
+                            lastName:
+                              type: string
+                              description: Last name
+                            company:
+                              type: string
+                              description: Company name
+                            address1:
+                              type: string
+                              description: Primary address line
+                            address2:
+                              type: string
+                              description: Secondary address line
+                            city:
+                              type: string
+                              description: City name
+                            cityCode:
+                              type: integer
+                              description: City code
+                            district:
+                              type: string
+                              description: District name
+                            districtId:
+                              type: integer
+                              description: District ID
+                            countyId:
+                              type: integer
+                              description: County ID (for CEE region)
+                            countyName:
+                              type: string
+                              description: County name (for CEE region)
+                            shortAddress:
+                              type: string
+                              description: Short address (for GULF region)
+                            stateName:
+                              type: string
+                              description: State name (for GULF region)
+                            addressLines:
+                              type: object
+                              properties:
+                                addressLine1:
+                                  type: string
+                                addressLine2:
+                                  type: string
+                            postalCode:
+                              type: string
+                              description: Postal code
+                            countryCode:
+                              type: string
+                              description: Country code
+                            neighborhoodId:
+                              type: integer
+                              description: Neighborhood ID
+                            neighborhood:
+                              type: string
+                              description: Neighborhood name
+                            phone:
+                              type: string
+                              nullable: true
+                              description: Phone number
+                            fullAddress:
+                              type: string
+                              description: Complete address
+                            fullName:
+                              type: string
+                              description: Full name
+                        shipmentNumber:
+                          type: string
+                          description: Shipment number
+                        orderNumber:
+                          type: string
+                          description: Order number
+                        grossAmount:
+                          type: number
+                          format: double
+                          description: Gross amount
+                        packageGrossAmount:
+                          type: number
+                          format: double
+                          description: Package gross amount
+                        totalDiscount:
+                          type: number
+                          format: double
+                          description: Total discount
+                        packageSellerDiscount:
+                          type: number
+                          format: double
+                          description: Package seller discount
+                        totalTyDiscount:
+                          type: number
+                          format: double
+                          description: Total Trendyol discount (full if commercial true, 0 if false)
+                        packageTyDiscount:
+                          type: number
+                          format: double
+                          description: Package Trendyol discount (full if commercial true, 0 if false)
+                        packageTotalDiscount:
+                          type: number
+                          format: double
+                          description: Package total discount
+                        discountDisplays:
+                          type: array
+                          description: Discount display information
+                          items:
+                            type: object
+                            properties:
+                              displayName:
+                                type: string
+                                description: Display name of discount
+                              discountAmount:
+                                type: number
+                                format: double
+                                description: Discount amount
+                        taxNumber:
+                          type: string
+                          nullable: true
+                          description: Tax number
+                        invoiceAddress:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              format: int64
+                              description: Invoice address ID
+                            firstName:
+                              type: string
+                              description: First name
+                            lastName:
+                              type: string
+                              description: Last name
+                            company:
+                              type: string
+                              description: Company name (may be empty for GULF region)
+                            address1:
+                              type: string
+                              description: Primary address line
+                            address2:
+                              type: string
+                              description: Secondary address line
+                            city:
+                              type: string
+                              description: City name
+                            cityCode:
+                              type: integer
+                              description: City code
+                            district:
+                              type: string
+                              description: District name (may be empty for GULF region)
+                            districtId:
+                              type: integer
+                              description: District ID
+                            countyId:
+                              type: integer
+                              description: County ID (available for CEE region)
+                            countyName:
+                              type: string
+                              description: County name (available for CEE region)
+                            shortAddress:
+                              type: string
+                              description: Short address (available for GULF region)
+                            stateName:
+                              type: string
+                              description: State name (available for GULF region)
+                            addressLines:
+                              type: object
+                              properties:
+                                addressLine1:
+                                  type: string
+                                addressLine2:
+                                  type: string
+                            postalCode:
+                              type: string
+                              description: Postal code (may be empty for GULF region)
+                            countryCode:
+                              type: string
+                              description: Country code
+                            neighborhoodId:
+                              type: integer
+                              description: Neighborhood ID
+                            phone:
+                              type: string
+                              nullable: true
+                              description: Phone number
+                            latitude:
+                              type: string
+                              description: Latitude coordinate
+                            longitude:
+                              type: string
+                              description: Longitude coordinate
+                            fullAddress:
+                              type: string
+                              description: Complete address
+                            fullName:
+                              type: string
+                              description: Full name
+                            taxOffice:
+                              type: string
+                              description: Tax office (only for corporate invoice when commercial=true)
+                            taxNumber:
+                              type: string
+                              description: Tax number (only for corporate invoice when commercial=true)
+                        customerFirstName:
+                          type: string
+                          description: Customer first name
+                        customerEmail:
+                          type: string
+                          description: Customer email
+                        customerId:
+                          type: integer
+                          format: int64
+                          description: Customer ID
+                        supplierId:
+                          type: integer
+                          description: Supplier ID
+                        customerLastName:
+                          type: string
+                          description: Customer last name
+                        id:
+                          type: integer
+                          format: int64
+                          description: Package ID
+                        shipmentPackageId:
+                          type: integer
+                          format: int64
+                          description: Shipment package ID
+                        cargoTrackingNumber:
+                          type: integer
+                          format: int64
+                          description: Cargo tracking number
+                        cargoTrackingLink:
+                          type: string
+                          description: Cargo tracking link
+                        cargoSenderNumber:
+                          type: string
+                          description: Cargo sender number
+                        cargoProviderName:
+                          type: string
+                          description: Cargo provider name
+                        lines:
+                          type: array
+                          description: Order line items
+                          items:
+                            type: object
+                            properties:
+                              quantity:
+                                type: integer
+                                description: Quantity
+                              salesCampaignId:
+                                type: integer
+                                description: Sales campaign ID
+                              productSize:
+                                type: string
+                                description: Product size
+                              merchantSku:
+                                type: string
+                                description: Merchant SKU
+                              sku:
+                                type: string
+                                description: SKU
+                              stockCode:
+                                type: string
+                                description: Stock code
+                              productName:
+                                type: string
+                                description: Product name
+                              productCode:
+                                type: integer
+                                format: int64
+                                description: Product code
+                              contentId:
+                                type: integer
+                                format: int64
+                                description: Content ID
+                              productOrigin:
+                                type: string
+                                description: Product origin country
+                              merchantId:
+                                type: integer
+                                description: Merchant ID
+                              sellerId:
+                                type: integer
+                                description: Seller ID
+                              amount:
+                                type: number
+                                format: double
+                                description: Amount
+                              lineGrossAmount:
+                                type: number
+                                format: double
+                                description: Line gross amount
+                              discount:
+                                type: number
+                                format: double
+                                description: Discount
+                              lineTotalDiscount:
+                                type: number
+                                format: double
+                                description: Line total discount
+                              lineSellerDiscount:
+                                type: number
+                                format: double
+                                description: Line seller discount
+                              tyDiscount:
+                                type: number
+                                format: double
+                                description: Trendyol discount
+                              lineTyDiscount:
+                                type: number
+                                format: double
+                                description: Line Trendyol discount
+                              discountDetails:
+                                type: array
+                                description: Discount details per line item
+                                items:
+                                  type: object
+                                  properties:
+                                    lineItemPrice:
+                                      type: number
+                                      format: double
+                                    lineItemDiscount:
+                                      type: number
+                                      format: double
+                                    lineItemSellerDiscount:
+                                      type: number
+                                      format: double
+                                    lineItemTyDiscount:
+                                      type: number
+                                      format: double
+                              currencyCode:
+                                type: string
+                                description: Currency code
+                              productColor:
+                                type: string
+                                description: Product color
+                              id:
+                                type: integer
+                                format: int64
+                                description: Line ID
+                              lineId:
+                                type: integer
+                                format: int64
+                                description: Line ID
+                              vatBaseAmount:
+                                type: number
+                                format: double
+                                description: VAT base amount
+                              vatRate:
+                                type: number
+                                format: double
+                                description: VAT rate
+                              barcode:
+                                type: string
+                                description: Barcode
+                              orderLineItemStatusName:
+                                type: string
+                                description: Order line item status
+                              price:
+                                type: number
+                                format: double
+                                description: Price
+                              lineUnitPrice:
+                                type: number
+                                format: double
+                                description: Line unit price
+                              fastDeliveryOptions:
+                                type: array
+                                items:
+                                  type: string
+                                description: Fast delivery options
+                              productCategoryId:
+                                type: integer
+                                description: Product category ID
+                              commission:
+                                type: number
+                                format: double
+                                description: Commission percentage
+                              cancelledBy:
+                                type: string
+                                description: Who cancelled the item
+                              cancelReason:
+                                type: string
+                                description: Cancellation reason
+                              cancelReasonCode:
+                                type: string
+                                description: Cancellation reason code
+                        orderDate:
+                          type: integer
+                          format: int64
+                          description: Order date (Unix timestamp in milliseconds)
+                        identityNumber:
+                          type: string
+                          description: Identity number
+                        currencyCode:
+                          type: string
+                          description: Currency code
+                        packageHistories:
+                          type: array
+                          description: Package status history
+                          items:
+                            type: object
+                            properties:
+                              createdDate:
+                                type: integer
+                                format: int64
+                                description: Status change date (Unix timestamp in milliseconds)
+                              status:
+                                type: string
+                                description: Package status
+                        shipmentPackageStatus:
+                          type: string
+                          description: Shipment package status
+                        status:
+                          type: string
+                          description: Package status
+                        whoPays:
+                          type: integer
+                          description: Who pays (1 for seller agreement, not present for Trendyol agreement)
+                        deliveryType:
+                          type: string
+                          description: Delivery type
+                        timeSlotId:
+                          type: integer
+                          description: Time slot ID
+                        estimatedDeliveryStartDate:
+                          type: integer
+                          format: int64
+                          description: Estimated delivery start date (Unix timestamp)
+                        estimatedDeliveryEndDate:
+                          type: integer
+                          format: int64
+                          description: Estimated delivery end date (Unix timestamp)
+                        totalPrice:
+                          type: number
+                          format: double
+                          description: Total price
+                        packageTotalPrice:
+                          type: number
+                          format: double
+                          description: Package total price
+                        deliveryAddressType:
+                          type: string
+                          description: Delivery address type
+                        agreedDeliveryDate:
+                          type: integer
+                          format: int64
+                          description: Agreed delivery date (Unix timestamp)
+                        fastDelivery:
+                          type: boolean
+                          description: Fast delivery flag
+                        originShipmentDate:
+                          type: integer
+                          format: int64
+                          description: Origin shipment date (Unix timestamp)
+                        lastModifiedDate:
+                          type: integer
+                          format: int64
+                          description: Last modified date (Unix timestamp)
+                        commercial:
+                          type: boolean
+                          description: Commercial invoice flag
+                        fastDeliveryType:
+                          type: string
+                          description: Fast delivery type
+                        deliveredByService:
+                          type: boolean
+                          description: Delivered by service flag
+                        warehouseId:
+                          type: integer
+                          description: Warehouse ID
+                        invoiceLink:
+                          type: string
+                          description: Invoice link URL
+                        micro:
+                          type: boolean
+                          description: Micro export order flag
+                        giftBoxRequested:
+                          type: boolean
+                          description: Gift box requested flag
+                        3pByTrendyol:
+                          type: boolean
+                          description: Third party by Trendyol flag
+                        etgbNo:
+                          type: string
+                          description: ETGB number (returned when micro is true)
+                        etgbDate:
+                          type: integer
+                          format: int64
+                          description: ETGB date (Unix timestamp, returned when micro is true)
+                        containsDangerousProduct:
+                          type: boolean
+                          description: Contains dangerous products flag (batteries, perfume, etc. in micro
+                            export orders)
+                        cargoDeci:
+                          type: number
+                          format: double
+                          description: Cargo deci (volume weight)
+                        isCod:
+                          type: boolean
+                          description: Cash on delivery flag
+                        createdBy:
+                          type: string
+                          description: How package was created (order-creation, split, cancel, transfer)
+                        originPackageIds:
+                          type: array
+                          nullable: true
+                          items:
+                            type: integer
+                            format: int64
+                          description: Original package IDs (populated after cancellation or splitting)
+                        hsCode:
+                          type: string
+                          description: HS code (returned as string for micro orders)
+              example:
+                totalElements: 1
+                totalPages: 1
+                page: 0
+                size: 1
+                content:
+                - shipmentAddress:
+                    id: 11111111
+                    firstName: Trendyol
+                    lastName: Customer
+                    company: ''
+                    address1: DSM Grup Danışmanlık İletişim ve Satış Ticaret A.Ş. Maslak Mahallesi Saat
+                      Sokak Spine Tower No:5 İç Kapı No:19 Sarıyer/İstanbul
+                    address2: ''
+                    city: İstanbul
+                    cityCode: 34
+                    district: Sarıyer
+                    districtId: 54
+                    countyId: 0
+                    countyName: ''
+                    shortAddress: ''
+                    stateName: ''
+                    addressLines:
+                      addressLine1: ''
+                      addressLine2: ''
+                    postalCode: '34200'
+                    countryCode: TR
+                    neighborhoodId: 21111
+                    neighborhood: Maslak Mahallesi
+                    phone: null
+                    fullAddress: DSM Grup Danışmanlık İletişim ve Satış Ticaret A.Ş. Maslak Mahallesi
+                      Saat Sokak Spine Tower No:5 İç Kapı No:19 Sarıyer/İstanbul
+                    fullName: Trendyol Customer
+                  orderNumber: '10654411111'
+                  grossAmount: 498.9
+                  packageGrossAmount: 498.9
+                  totalDiscount: 0
+                  packageSellerDiscount: 0
+                  totalTyDiscount: 0
+                  packageTyDiscount: 0
+                  packageTotalDiscount: 0
+                  discountDisplays:
+                  - displayName: Sepette %20 İndirim
+                    discountAmount: 100
+                  - displayName: Trendyol Plus'a Özel Fiyat
+                    discountAmount: 67.2
+                  - displayName: Sepette %50 İndirim
+                    discountAmount: 500
+                  - displayName: Sepette %30 İndirim
+                    discountAmount: 60
+                  taxNumber: null
+                  invoiceAddress:
+                    id: 11111112
+                    firstName: Trendyol
+                    lastName: Customer
+                    company: ''
+                    address1: DSM Grup Danışmanlık İletişim ve Satış Ticaret A.Ş. Maslak Mahallesi Saat
+                      Sokak Spine Tower No:5 İç Kapı No:19 Sarıyer/İstanbul
+                    address2: ''
+                    city: İstanbul
+                    cityCode: 0
+                    district: Sarıyer
+                    districtId: 54
+                    countyId: 0
+                    countyName: ''
+                    shortAddress: ''
+                    stateName: ''
+                    addressLines:
+                      addressLine1: ''
+                      addressLine2: ''
+                    postalCode: ''
+                    countryCode: TR
+                    neighborhoodId: 0
+                    phone: null
+                    latitude: '11.111111'
+                    longitude: '22.222222'
+                    fullAddress: DSM Grup Danışmanlık İletişim ve Satış Ticaret A.Ş. Maslak Mahallesi
+                      Saat Sokak Spine Tower No:5 İç Kapı No:19 Sarıyer/İstanbul
+                    fullName: Trendyol Customer
+                    taxOffice: Company of OMS's Tax Office
+                    taxNumber: Company of OMS's Tax Number
+                  customerFirstName: Trendyol
+                  customerEmail: pf+j1jm1x11@trendyolmail.com
+                  customerId: 1451111111
+                  supplierId: 2738
+                  customerLastName: Customer
+                  id: 33301111111
+                  shipmentPackageId: 3330111111
+                  cargoTrackingNumber: 7280027504111111
+                  cargoTrackingLink: https://tracking.trendyol.com/?id=111111111-1111-1111-1111-11111111
+                  cargoSenderNumber: '210090111111'
+                  cargoProviderName: Trendyol Express
+                  lines:
+                  - quantity: 1
+                    salesCampaignId: 11
+                    productSize: Tek Ebat
+                    merchantSku: '111111'
+                    sku: '8683771111111'
+                    stockCode: '111111'
+                    productName: Kuş ve Çiçek Desenli Tepsi - Yeşil / Altın Sarısı - 49 cm, 01SYM134,
+                      Tek Ebat
+                    productCode: 1239111111
+                    contentId: 1239111111
+                    productOrigin: TR
+                    merchantId: 2738
+                    sellerId: 2738
+                    amount: 498.9
+                    lineGrossAmount: 498.9
+                    discount: 0
+                    lineTotalDiscount: 0
+                    lineSellerDiscount: 0
+                    tyDiscount: 0
+                    lineTyDiscount: 0
+                    discountDetails:
+                    - lineItemPrice: 498.9
+                      lineItemDiscount: 0
+                      lineItemSellerDiscount: 0
+                      lineItemTyDiscount: 0
+                    currencyCode: TRY
+                    productColor: Yeşil
+                    id: 4765111111
+                    lineId: 4765111111
+                    vatBaseAmount: 20
+                    vatRate: 20
+                    barcode: '8683772071724'
+                    orderLineItemStatusName: Delivered
+                    price: 498.9
+                    lineUnitPrice: 498.9
+                    fastDeliveryOptions: []
+                    productCategoryId: 2710
+                    commission: 13
+                    cancelledBy: ''
+                    cancelReason: ''
+                    cancelReasonCode: ''
+                  orderDate: 1762253333685
+                  identityNumber: '11111111111'
+                  currencyCode: TRY
+                  packageHistories:
+                  - createdDate: 1762242537624
+                    status: Awaiting
+                  - createdDate: 1762242543616
+                    status: Created
+                  - createdDate: 1762246983623
+                    status: Invoiced
+                  - createdDate: 1762246983623
+                    status: Picking
+                  - createdDate: 1762352727000
+                    status: Shipped
+                  - createdDate: 1762860180000
+                    status: Delivered
+                  shipmentPackageStatus: Delivered
+                  status: Delivered
+                  whoPays: 1
+                  deliveryType: normal
+                  timeSlotId: 0
+                  estimatedDeliveryStartDate: 1762858136000
+                  estimatedDeliveryEndDate: 1763030936000
+                  totalPrice: 498.9
+                  packageTotalPrice: 498.9
+                  deliveryAddressType: Shipment
+                  agreedDeliveryDate: 1762376340000
+                  fastDelivery: false
+                  originShipmentDate: 1762242537619
+                  lastModifiedDate: 1762865408581
+                  commercial: false
+                  fastDeliveryType: ''
+                  deliveredByService: false
+                  warehouseId: 372389
+                  invoiceLink: https://efatura01.evidea.com/11111111111
+                  micro: true
+                  giftBoxRequested: false
+                  3pByTrendyol: false
+                  etgbNo: 25341453EX025864
+                  etgbDate: 1762646400000
+                  containsDangerousProduct: false
+                  cargoDeci: 10
+                  isCod: false
+                  createdBy: order-creation
+                  originPackageIds: null
+                  hsCode: '711111000000'
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/orders/stream:
+    get:
+      tags:
+      - Order Integration
+      summary: Get Shipment Packages via Stream - getShipmentPackagesStream
+      description: 'You can retrieve shipment packages for orders placed by customers using cursor-based
+        pagination.
+
+        This method provides a more efficient and reliable way to fetch order packages compared to traditional
+        page-number-based pagination.
+
+        Data is returned in a fixed sort order: lastModifiedDate newest to oldest (DESC).
+
+        The content array contains the same shipment package structure as the getShipmentPackages endpoint.
+
+        '
+      operationId: getShipmentPackagesStream
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code. Works the same way as the existing getShipmentPackages service.
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          maximum: 200
+        description: Maximum number of packages to return per request (default 50, maximum 200)
+      - name: nextCursor
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Opaque token used to fetch the next page. Must not be sent in the first request.
+          Use the nextCursor value from the response as-is.
+      - name: packageItemStatuses
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Filter by package item statuses. Multiple statuses can be sent separated by commas.
+
+          Valid values: Created, Picking, Invoiced, Shipped, Cancelled, Delivered, UnDelivered, Returned,
+          UnSupplied, AtCollectionPoint, UnPacked, Awaiting
+
+          '
+      - name: lastModifiedStartDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        description: Fetch packages modified after this date (Unix timestamp in milliseconds)
+      - name: lastModifiedEndDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        description: Fetch packages modified before this date (Unix timestamp in milliseconds)
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    description: List of shipment packages. The package structure is the same as the getShipmentPackages
+                      endpoint response.
+                    items:
+                      type: object
+                      description: Shipment package details (same structure as getShipmentPackages)
+                  size:
+                    type: integer
+                    description: Number of packages in the current response
+                  hasMore:
+                    type: boolean
+                    description: Indicates whether more data is available. If true, the next page exists.
+                  nextCursor:
+                    type: string
+                    description: Cursor value to use for fetching the next page. Empty when hasMore is
+                      false.
+        '400':
+          description: Bad Request - Invalid nextCursor value, invalid sellerId, cursor-filter mismatch
+        '401':
+          description: Unauthorized
+        '429':
+          description: Too Many Requests
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/tracking-details:
+    put:
+      tags:
+      - Order Integration
+      - Returned Orders Integration - EUROPE
+      - Returned Orders Integration - GULF
+      summary: Update Tracking Number
+      description: 'This method should be used to notify Trendyol of the package tracking number.
+
+
+        **For Normal Order Packages:**
+
+        - Package status should be Picking before using this service
+
+        - Use appropriate storeFrontCode for the region
+
+
+        **For Rejected Return Packages (EUROPE & GULF):**
+
+        - Use this same endpoint to update tracking numbers for rejected return packages
+
+        - The packageId refers to the rejected return package ID
+
+        - If tracking code already exists, you will receive error "Shipment tracking number cannot be
+        updated"
+
+
+        **Required:**
+
+        - storeFrontCode as Header Parameter (to differentiate regions)
+
+        - cargoSenderNumber and providerCode in request body
+
+        - returnTrackingNumber is optional (for Germany only)
+
+        '
+      operationId: updateTrackingNumber
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - cargoSenderNumber
+              - providerCode
+              properties:
+                cargoSenderNumber:
+                  type: string
+                  description: Cargo tracking number
+                  example: '123'
+                providerCode:
+                  type: string
+                  description: Cargo provider code
+                  example: DHLMP
+                returnTrackingNumber:
+                  type: string
+                  description: Return tracking number (optional, for Germany)
+                  example: '137456971563'
+      responses:
+        '200':
+          description: Tracking number updated successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}:
+    put:
+      tags:
+      - Order Integration
+      summary: Update Package Status
+      description: Used to notify Trendyol of package status changes (Picking or Invoiced). Should first
+        notify Picking and then Invoiced. Customer cannot cancel package after Shipped status.
+      operationId: updatePackageStatus
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - Picking
+                  - Invoiced
+                  description: Package status
+                lines:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      lineId:
+                        type: integer
+                        format: int64
+                      quantity:
+                        type: integer
+                params:
+                  type: object
+                  description: Additional parameters as key-value pairs. Can include invoiceNumber but
+                    should be given only for Invoiced status.
+                  additionalProperties:
+                    type: string
+            example:
+              status: Invoiced
+              params:
+                invoiceNumber: EME2018000025208
+      responses:
+        '200':
+          description: Package status updated successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/items/unsupplied:
+    put:
+      tags:
+      - Order Integration
+      summary: Cancel Package
+      description: Use this method to cancel one or more items in an Order Package. Package will be split
+        automatically if one item is cancelled. New PackageID will be generated. shouldKeepPreviousStatus
+        true keeps the package status, false creates package with Created status.
+      operationId: cancelPackage
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - lines
+              - reasonId
+              properties:
+                lines:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - lineId
+                    - quantity
+                    properties:
+                      lineId:
+                        type: integer
+                        format: int64
+                        description: Order line ID
+                      quantity:
+                        type: integer
+                        description: Quantity to cancel
+                reasonId:
+                  type: integer
+                  description: Cancellation reason ID (500-Stock Out, 501-Faulty/damaged, 502-Wrong price,
+                    503-Incorrect image/barcode/quantity, 504-Integration error, 505-Bulk purchase, 506-Force
+                    majeure)
+                  enum:
+                  - 500
+                  - 501
+                  - 502
+                  - 503
+                  - 504
+                  - 505
+                  - 506
+                shouldKeepPreviousStatus:
+                  type: boolean
+                  default: false
+                  description: Whether to keep the previous status (true) or create new package with Created
+                    status (false)
+      responses:
+        '200':
+          description: Package cancelled successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/split-packages:
+    post:
+      tags:
+      - Split Order Package
+      summary: Split Order Packages with Multiple Barcodes
+      description: Divide order packages with multiple barcodes by specifying quantity and orderLineId.
+        New packages will be generated asynchronously. Package status will be UnPacked and new PackageIDs
+        will be generated. Products excluded from request will be created in a separate new package. shouldKeepPreviousStatus
+        true keeps the package status, false creates package with Created status.
+      operationId: splitMultiPackagesByQuantity
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - splitPackages
+              properties:
+                splitPackages:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - packageDetails
+                    properties:
+                      packageDetails:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                          - orderLineId
+                          - quantities
+                          properties:
+                            orderLineId:
+                              type: integer
+                              format: int64
+                              description: Order line ID
+                            quantities:
+                              type: integer
+                              description: Quantity for this package
+                shouldKeepPreviousStatus:
+                  type: boolean
+                  default: false
+                  description: Whether to keep the previous status (true) or create new package with Created
+                    status (false)
+      responses:
+        '200':
+          description: Package split successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/split:
+    post:
+      tags:
+      - Split Order Package
+      summary: Split Shipment Package
+      description: Use this method to split one or more items in an Order Package. Package status will
+        be UnPacked and new PackageIDs will be generated. shouldKeepPreviousStatus true keeps the package
+        status, false creates package with Created status.
+      operationId: splitShipmentPackage
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - orderLineIds
+              properties:
+                orderLineIds:
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
+                  description: Array of order line IDs to split
+                shouldKeepPreviousStatus:
+                  type: boolean
+                  default: false
+                  description: Whether to keep the previous status (true) or create new package with Created
+                    status (false)
+      responses:
+        '200':
+          description: Package split successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/quantity-split:
+    post:
+      tags:
+      - Split Order Package
+      summary: Split Packages Based On Barcode
+      description: Split order packages based on barcode quantities. New packages will be generated asynchronously.
+        shouldKeepPreviousStatus true keeps the package status, false creates package with Created status.
+      operationId: splitShipmentPackageByQuantity
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - quantitySplit
+              properties:
+                quantitySplit:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - orderLineId
+                    - quantities
+                    properties:
+                      orderLineId:
+                        type: integer
+                        format: int64
+                        description: Order line ID
+                      quantities:
+                        type: array
+                        items:
+                          type: integer
+                        description: Array of quantities to split into separate packages
+                shouldKeepPreviousStatus:
+                  type: boolean
+                  default: false
+                  description: Whether to keep the previous status (true) or create new package with Created
+                    status (false)
+      responses:
+        '200':
+          description: Package split successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/multi-split:
+    post:
+      tags:
+      - Split Order Package
+      summary: Split Multiple Packages by Quantity
+      description: Create multiple packages with a single request by grouping order lines. All orderLines
+        in a package should not be sent. Final package for remaining orderlines will be created automatically.
+        New packages will be generated asynchronously. shouldKeepPreviousStatus true keeps the package
+        status, false creates package with Created status.
+      operationId: multiSplitShipmentPackage
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - splitGroups
+              properties:
+                splitGroups:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - orderLineIds
+                    properties:
+                      orderLineIds:
+                        type: array
+                        items:
+                          type: integer
+                          format: int64
+                        description: Array of order line IDs for this group
+                shouldKeepPreviousStatus:
+                  type: boolean
+                  default: false
+                  description: Whether to keep the previous status (true) or create new package with Created
+                    status (false)
+      responses:
+        '200':
+          description: Package split successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/alternative-delivery:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Shipping with Cargo Link
+      description: Process alternative delivery for GULF region. After sending the order package, you
+        can feed it with cargo tracking link or phone number. Must apply to Trendyol Team to use this
+        service (ADEL permission required). Package status will automatically switch to Shipped. Seller
+        cannot set Delivered or Returned status within 6 hours after shipping.
+      operationId: processAlternativeDelivery
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - isPhoneNumber
+              - trackingInfo
+              - params
+              properties:
+                isPhoneNumber:
+                  type: boolean
+                  description: For cargo link use false, For phone number use true
+                  example: true
+                trackingInfo:
+                  type: string
+                  description: If isPhoneNumber is false use cargo tracking link, If isPhoneNumber is
+                    true use contact phone number
+                  example: '5555555555'
+                params:
+                  type: object
+                  description: Should be always empty
+                  additionalProperties:
+                    type: string
+                boxQuantity:
+                  type: integer
+                  description: The quantity of the package (optional)
+                  example: 1
+                deci:
+                  type: number
+                  format: float
+                  description: The deci of the package (optional)
+                  example: 1.4
+      responses:
+        '200':
+          description: Alternative delivery processed successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/manual-deliver/{cargoTrackingNumber}:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Delivery by Tracking Number
+      description: Change package status to delivered using cargo tracking number. For packages sent by
+        alternate delivery (ADEL).
+      operationId: manualDeliverByTrackingNumber
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: cargoTrackingNumber
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Cargo tracking number
+      responses:
+        '200':
+          description: Package delivered successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/manual-deliver:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Delivery by Package Number
+      description: Change package status to delivered using package ID. For packages sent by alternate
+        delivery (ADEL).
+      operationId: manualDeliverByPackageId
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      responses:
+        '200':
+          description: Package delivered successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/manual-return/{cargoTrackingNumber}:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Return by Tracking Number
+      description: Change package status to returned using cargo tracking number. For undelivered packages
+        sent by alternate delivery (ADEL).
+      operationId: manualReturnByTrackingNumber
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: cargoTrackingNumber
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Cargo tracking number
+      responses:
+        '200':
+          description: Package returned successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/manual-return:
+    put:
+      tags:
+      - Shipping Alternative Delivery
+      summary: Manual Return by Package Number
+      description: Change package status to returned using package ID. For undelivered packages sent by
+        alternate delivery (ADEL).
+      operationId: manualReturnByPackageId
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      responses:
+        '200':
+          description: Package returned successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/cargo-providers:
+    put:
+      tags:
+      - Order Integration
+      summary: Change Cargo Provider
+      description: "This service is used to change the cargo provider of packages. \nCheck package after\
+        \ changing using getShipmentPackages service. Can only change from TY Pays model to TY Pays Model.\
+        \ \nAvailable for GULF and CEE regions.\n\n**FOR CEE - Trendyol Pays Cargo Providers for Prepaid:**\n\
+        - RO (Romania): FANCOURIER, DPD Romania\n\n**FOR CEE - Trendyol Pays Cargo Providers for COD:**\n\
+        - RO (Romania): FANCOURIER, DPD Romania\n\n**FOR GULF - Trendyol Pays Cargo Providers for Prepaid:**\n\
+        - AE (UAE): Aramex, EMX, J&T, Shipa\n- SA (Saudi Arabia): Aramex, J&T, Shipa, SPL\n\n**FOR GULF\
+        \ - Trendyol Pays Cargo Providers for COD:**\n- AE (UAE): Aramex, Shipa\n- SA (Saudi Arabia):\
+        \ Aramex, Shipa\n"
+      operationId: changeCargoProvider
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - cargoProvider
+              properties:
+                cargoProvider:
+                  type: string
+                  description: Cargo provider code
+                  enum:
+                  - Aramex
+                  - EMX
+                  - J&T
+                  - Shipa
+                  - SPL
+                  - FANCOURIER
+                  - DPD Romania
+                  example: Aramex
+      responses:
+        '200':
+          description: Successful request. Cargo provider changed successfully.
+        '400':
+          description: Client error
+        '409':
+          description: 'Conflict - Cannot change cargo provider. Error codes:
+
+            - **CPE001**: The selected shipping partner is not registered in the system, so the change
+            cannot be made.
+
+            - **CPE002**: The shipping partner cannot be changed for this order.
+
+            - **CPE003**: Shipping partner changes are only allowed for marketplace orders.
+
+            - **CPE004**: The selected partner does not deliver to the destination specified in the order,
+            so the change cannot be made.
+
+            - **CPE005**: The selected shipping partner is not active in the system, so the change cannot
+            be made.
+
+            - **CPE006**: The selected shipping partner cannot be changed. You can contact live support
+            for assistance.
+
+            - **CPE007**: This order is not eligible for delivery with the selected shipping partner,
+            so the change cannot be made.
+
+            - **RTE003**: You have recently made partner change. You can try the same operation again
+            in 5 minutes.
+
+            - **General**: The selected shipping partner cannot be changed. You can contact live support
+            for assistance.
+
+            '
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/box-info:
+    put:
+      tags:
+      - Order Integration
+      summary: Notify Deci and Box Quantity Information
+      description: Feed deci and box quantity for order packages of Flow PL and Starlinks H&B companies
+        (GULF region). Required for Flow PL and Starlinks H&B Logistics. Must enter accurate volumetric
+        weight for vehicle planning. Volumetric weight equals Width times Length times Height divided
+        by 5000. Note This service is under development.
+      operationId: updateBoxInfo
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - boxQuantity
+              - deci
+              properties:
+                boxQuantity:
+                  type: integer
+                  description: Number of boxes
+                  example: 4
+                deci:
+                  type: number
+                  format: float
+                  description: Volumetric weight
+                  example: 4.4
+      responses:
+        '202':
+          description: Box info updated successfully
+        '400':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timestamp:
+                    type: integer
+                    format: int64
+                    description: Error timestamp
+                  exception:
+                    type: string
+                    description: Exception type
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                          description: Error key
+                        message:
+                          type: string
+                          description: Error message
+                        errorCode:
+                          type: string
+                          description: Error code
+                        args:
+                          type: array
+                          items:
+                            type: string
+                          description: Additional arguments
+              example:
+                timestamp: 1755005402200
+                exception: TrendyolBusinessException
+                errors:
+                - key: box.info.already.assigned
+                  message: Zaten atanmış bir koli bilgisi bulunmaktadır.
+                  errorCode: ''
+                  args: []
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/as-accepted:
+    post:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Create a Return Request (as-accepted)
+      description: You can use it to create return request packages for order packages that arrive without
+        a return code.
+      operationId: createClaimAsAcceptedEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimItems
+              - orderParentNumber
+              properties:
+                claimItems:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - orderLineId
+                    - quantity
+                    properties:
+                      orderLineId:
+                        type: integer
+                        format: int64
+                        description: Order line ID
+                        example: 456
+                      quantity:
+                        type: integer
+                        description: Quantity to return
+                        example: 1
+                orderParentNumber:
+                  type: string
+                  description: The order number
+                  example: '1234567'
+      responses:
+        '200':
+          description: Claim created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  claimId:
+                    type: string
+                    description: The created claim ID
+                  claimItemIds:
+                    type: array
+                    items:
+                      type: string
+                    description: Array of created claim item IDs
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/create:
+    post:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Create a Return Request (createClaim)
+      description: You can use it to create return request packages for order packages that arrive without
+        a return code.
+      operationId: createClaimEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimItems
+              - customerId
+              - orderNumber
+              - shipmentCompanyId
+              properties:
+                claimItems:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - barcode
+                    - quantity
+                    - reasonId
+                    properties:
+                      barcode:
+                        type: string
+                        description: The barcode information of the product in the order
+                      customerNote:
+                        type: string
+                        description: Field written by customers. You can feed this field with text such
+                          as Return without return code
+                      quantity:
+                        type: integer
+                        description: The quantity information of the product you want to create a return
+                          request
+                      reasonId:
+                        type: integer
+                        description: Return reasons selected by customers on trendyol.com. Available codes
+                          2060 (Delayed international delivery), 2061 (Seller Originated Situations),
+                          2044 (Analysis request), 2059 (Shipment is lost abroad), 2062 (Cargo Related
+                          Situations), 801 (Shipment arrived too late), 301 (Defective product was sent),
+                          651 (Different from how it was shown/described), 2042 (I didn't like it), 701
+                          (I ordered the wrong product), 2030 (Better price is available), 551 (Too big),
+                          351 (Incorrect product was sent), 2043 (Missing product part/accessory), 501
+                          (Too small), 2018 (Missing product), 751 (Other - Fraud-related), 1701 (Delayed
+                          Deliveries), 851 (Package was damaged), 401 (Changed my mind), 2015 (Undelivered
+                          Shipment), 2017 (Compensation), 2019 (Undelivered International Shipment), 2021
+                          (Shipment tracking link couldn't created), 2022 (Unsupplied product), 2038 (Returned
+                          while in delivery status)
+                        example: 401
+                        enum:
+                        - 2060
+                        - 2061
+                        - 2044
+                        - 2059
+                        - 2062
+                        - 801
+                        - 301
+                        - 651
+                        - 2042
+                        - 701
+                        - 2030
+                        - 551
+                        - 351
+                        - 2043
+                        - 501
+                        - 2018
+                        - 751
+                        - 1701
+                        - 851
+                        - 401
+                        - 2015
+                        - 2017
+                        - 2019
+                        - 2021
+                        - 2022
+                        - 2038
+                customerId:
+                  type: integer
+                  format: int64
+                  description: The id value of the customer who took the order on Trendyol
+                excludeListing:
+                  type: boolean
+                  description: Exclude from listing
+                forcePackageCreation:
+                  type: boolean
+                  description: Force package creation
+                orderNumber:
+                  type: string
+                  description: The number of the order
+                shipmentCompanyId:
+                  type: integer
+                  description: The id value of the cargo company you have worked with (should be 100 as
+                    default)
+                  example: 100
+      responses:
+        '200':
+          description: Claim created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  claimId:
+                    type: string
+                    description: The created claim ID
+                  cargoTrackingNumber:
+                    type: integer
+                    format: int64
+                    description: Cargo tracking number for the return
+                  claimItemIds:
+                    type: array
+                    items:
+                      type: string
+                    description: Array of created claim item IDs
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims:
+    get:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Getting Returned Orders
+      description: This method enables you to retrieve information about returned orders from the Trendyol
+        system.
+      operationId: getClaimsEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      - name: claimIds
+        in: query
+        required: false
+        schema:
+          type: string
+        description: See details of specific claim packages (comma separated)
+      - name: claimItemStatus
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - Created
+          - WaitingInAction
+          - Accepted
+          - Cancelled
+          - Rejected
+          - Unresolved
+          - InAnalysis
+        description: Filter by claim status
+      - name: startDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        description: Start date (timestamp)
+      - name: endDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        description: End date (timestamp)
+      - name: orderNumber
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The order number of the claim package
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+        description: Page number
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+        description: Maximum number of items per page
+      responses:
+        '200':
+          description: Successful response with claim details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalElements:
+                    type: integer
+                    description: Total number of elements
+                    example: 2099
+                  totalPages:
+                    type: integer
+                    description: Total number of pages
+                    example: 2099
+                  page:
+                    type: integer
+                    description: Current page number
+                    example: 0
+                  size:
+                    type: integer
+                    description: Page size
+                    example: 1
+                  content:
+                    type: array
+                    description: Array of claim objects
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Claim ID
+                        claimId:
+                          type: string
+                          description: Claim ID
+                        orderNumber:
+                          type: string
+                          description: Order number
+                        orderDate:
+                          type: integer
+                          format: int64
+                          description: Order date (timestamp)
+                        customerFirstName:
+                          type: string
+                          description: Customer first name
+                        customerLastName:
+                          type: string
+                          description: Customer last name
+                        claimDate:
+                          type: integer
+                          format: int64
+                          description: Claim date (timestamp in GMT)
+                        cargoTrackingNumber:
+                          type: integer
+                          format: int64
+                          description: Cargo tracking number
+                        cargoTrackingLink:
+                          type: string
+                          description: Cargo tracking link
+                        cargoSenderNumber:
+                          type: string
+                          description: Cargo sender number
+                        cargoProviderName:
+                          type: string
+                          description: Cargo provider name
+                        orderShipmentPackageId:
+                          type: integer
+                          format: int64
+                          description: Order shipment package ID
+                        replacementOutboundpackageinfo:
+                          type: object
+                          description: Replacement outbound package information (empty if no replacement)
+                          properties:
+                            cargoTrackingNumber:
+                              type: integer
+                              format: int64
+                            cargoProviderName:
+                              type: string
+                            cargoSenderNumber:
+                              type: string
+                            cargoTrackingLink:
+                              type: string
+                            packageid:
+                              type: integer
+                              format: int64
+                              description: Replacement packet ID information
+                            items:
+                              type: array
+                              items:
+                                type: string
+                              description: Array of claim item IDs
+                        rejectedpackageinfo:
+                          type: object
+                          description: Rejected package information (if available)
+                          properties:
+                            cargoTrackingNumber:
+                              type: integer
+                              format: int64
+                            cargoSenderNumber:
+                              type: string
+                            cargoProviderName:
+                              type: string
+                            cargoTrackingLink:
+                              type: string
+                            packageid:
+                              type: integer
+                              format: int64
+                              description: Rejected return package ID
+                            shipmentAddress:
+                              type: object
+                              properties:
+                                address1:
+                                  type: string
+                                address2:
+                                  type: string
+                                city:
+                                  type: string
+                                district:
+                                  type: string
+                                phone:
+                                  type: string
+                            items:
+                              type: array
+                              items:
+                                type: string
+                              description: Array of claim item IDs
+                            dontShipBack:
+                              type: boolean
+                              description: Indicates that the product should not be shipped back
+                        items:
+                          type: array
+                          description: Array of order line items
+                          items:
+                            type: object
+                            properties:
+                              orderLine:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                    format: int64
+                                  productName:
+                                    type: string
+                                  barcode:
+                                    type: string
+                                  merchantSku:
+                                    type: string
+                                  productColor:
+                                    type: string
+                                  productSize:
+                                    type: string
+                                  price:
+                                    type: number
+                                    format: double
+                                  vatBaseAmount:
+                                    type: number
+                                    format: double
+                                  vatRate:
+                                    type: number
+                                    format: double
+                                  salesCampaignId:
+                                    type: integer
+                                    format: int64
+                                  productCategory:
+                                    type: string
+                              claimItems:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                      description: Claim line item ID
+                                    orderLineItemId:
+                                      type: integer
+                                      format: int64
+                                    customerClaimItemReason:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        externalReasonId:
+                                          type: integer
+                                        code:
+                                          type: string
+                                    trendyolClaimItemReason:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        externalReasonId:
+                                          type: integer
+                                        code:
+                                          type: string
+                                    claimItemStatus:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          description: Status name (Created, WaitingInAction, Accepted,
+                                            etc.)
+                                    note:
+                                      type: string
+                                    customerNote:
+                                      type: string
+                                    resolved:
+                                      type: boolean
+                                    autoAccepted:
+                                      type: boolean
+                                      description: Returns which are waiting in actions for 48 hours are
+                                        automatically accepted by the system
+                                    acceptedBySeller:
+                                      type: boolean
+                                      description: Returns accepted by the seller
+                                    acceptDetail:
+                                      type: string
+                                      description: SUPPLIER, DISPUTE, or SYSTEM
+                        lastModifiedDate:
+                          type: integer
+                          format: int64
+                          description: Last modified date (timestamp)
+                        orderOutboundPackageId:
+                          type: integer
+                          format: int64
+                          description: Order outbound package ID
+              example:
+                totalElements: 2099
+                totalPages: 2099
+                page: 0
+                size: 1
+                content:
+                - id: f9da2317-876b-4b86-b8f7-0535c3b65731
+                  claimId: f9da2317-876b-4b86-b8f7-0535c3b65731
+                  orderNumber: '65745805'
+                  orderDate: 1524826343886
+                  customerFirstName: Trendyol
+                  customerLastName: Müşterisi
+                  claimDate: 1525844162827
+                  cargoTrackingNumber: 72602420957047276000
+                  cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                  cargoSenderNumber: '8106459254413'
+                  cargoProviderName: Aras Kargo Marketplace
+                  orderShipmentPackageId: 3853354
+                  replacementOutboundpackageinfo:
+                    cargoTrackingNumber: 72602420957047276000
+                    cargoProviderName: Aras Kargo Marketplace
+                    cargoSenderNumber: '733861966410'
+                    cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                    packageid: 28717254
+                    items:
+                    - b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                  rejectedpackageinfo:
+                    cargoTrackingNumber: 72602420957047276000
+                    cargoSenderNumber: '12345754875355'
+                    cargoProviderName: Aras Kargo Marketplace
+                    cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                    packageid: 28717254
+                    shipmentAddress:
+                      address1: xyz
+                      address2: xyz
+                      city: xyz
+                      district: xyz
+                      phone: '123456789'
+                    items:
+                    - b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                    dontShipBack: false
+                  items:
+                  - orderLine:
+                      id: 28717254
+                      productName: Erkek Bebek Sandalet 8S5280Z1/GREEN CS4, 21
+                      barcode: '99999999999'
+                      merchantSku: '2083667'
+                      productColor: GREEN CS4
+                      productSize: ' 21'
+                      price: 12.95
+                      vatBaseAmount: 8
+                      vatRate: 8
+                      salesCampaignId: 183631
+                      productCategory: Sandalet
+                    claimItems:
+                    - id: b71461e3-d1a0-4c1d-9a6d-18ecbcb5158c
+                      orderLineItemId: 29815493
+                      customerClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      trendyolClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      claimItemStatus:
+                        name: Created
+                      note: ''
+                      customerNote: Customer note
+                      resolved: false
+                      autoAccepted: false
+                      acceptedBySeller: true
+                      acceptDetail: SUPPLIER
+                  - orderLine:
+                      id: 28717255
+                      productName: Erkek Bebek Soket Çorap 4'lü 8S7346Z1/MIX YARN DYED K00, 6-12 Ay
+                      barcode: '99999999999'
+                      merchantSku: '2052551'
+                      productColor: MIX YARN DYED K00
+                      productSize: ' 17-18 (6-12 Ay)'
+                      price: 9.95
+                      vatBaseAmount: 8
+                      vatRate: 8
+                      salesCampaignId: 183631
+                      productCategory: Çorap
+                    claimItems:
+                    - id: b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                      orderLineItemId: 29815494
+                      customerClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      trendyolClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      claimItemStatus:
+                        name: Created
+                      note: ''
+                      customerNote: Customer note
+                      resolved: false
+                      autoAccepted: false
+                      acceptedBySeller: true
+                      acceptDetail: SUPPLIER
+                  lastModifiedDate: 1723275767111
+                  orderOutboundPackageId: 58835111
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/{claimId}/items/approve:
+    put:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Approve Returned Orders
+      description: You can confirm the return orders that are returned to your warehouse by means of this
+        method.
+      operationId: approveClaimLineItemsEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimLineItemIdList
+              properties:
+                claimLineItemIdList:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of claim line item IDs to approve
+                  example:
+                  - f9da2317-876b-4b86-b8f7-0535c3b65731
+                params:
+                  type: object
+                  description: Additional parameters
+      responses:
+        '200':
+          description: Claim items approved successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/{claimId}/issue:
+    post:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Reject Returned Orders
+      description: 'You can create a rejection request for returned orders in your warehouse.
+
+        You can attach files related to the return (pdf, jpeg, etc.) as "form-data (file)".
+
+        '
+      operationId: createClaimIssueEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - claimIssueReasonId
+              - claimItemIdList
+              - description
+              properties:
+                claimIssueReasonId:
+                  type: integer
+                  format: int64
+                  description: Claim issue reason ID
+                claimItemIdList:
+                  type: string
+                  description: Comma-separated list of claim item IDs
+                description:
+                  type: string
+                  maxLength: 500
+                  description: Description of the rejection
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Attachments (pdf, jpeg, etc.)
+      responses:
+        '200':
+          description: Claim issue created successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/claim-issue-reasons:
+    get:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Claim Issue Reasons
+      description: You can access the claimIssueReasonId value to be sent to the createClaimIssue service
+        by using this service.
+      operationId: getClaimsIssueReasonsEurope
+      parameters:
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      responses:
+        '200':
+          description: Successful response with array of claim issue reasons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Reason ID
+                    name:
+                      type: string
+                      description: Reason name
+              example:
+              - id: 51
+                name: The product received from the customer was used
+              - id: 201
+                name: The product received from the customer is wrong
+              - id: 251
+                name: The product received from the customer is defective/damaged
+              - id: 401
+                name: The product quantity received from the customer is missing
+              - id: 151
+                name: The product received from the customer is missing an accessory/part
+              - id: 1651
+                name: I did not receive the return package sent by the customer
+              - id: 2201
+                name: The item I sent is not missing
+              - id: 1751
+                name: The item I sent is not defective
+              - id: 1701
+                name: The item I sent is not incorrect
+              - id: 2151
+                name: I will send the invoice for the customer to get support from technical service
+              - id: 2051
+                name: A hygienic product's package has been opened
+              - id: 451
+                name: I'll send the returned item for analysis
+              - id: 1801
+                name: No production/manufacturing-related issue was found.
+              - id: 1851
+                name: The product has been replaced
+              - id: 1901
+                name: The product has been repaired
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/items/{claimItemsId}/audit:
+    get:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Get Claim Audit Information
+      description: With this service, you can check the status progress of the returned order, the update
+        date, the person who made the transaction.
+      operationId: getClaimAuditsEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: claimItemsId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim item ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      responses:
+        '200':
+          description: Successful response with array of audit records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    claimId:
+                      type: string
+                      description: Claim ID
+                    claimItemId:
+                      type: string
+                      description: Claim item ID
+                    previousStatus:
+                      type: string
+                      description: Previous status (empty string for first status)
+                    newStatus:
+                      type: string
+                      description: New status
+                    userInfoDocument:
+                      type: object
+                      description: Information about who made the transaction
+                      properties:
+                        executorId:
+                          type: string
+                          description: Executor ID
+                        executorApp:
+                          type: string
+                          description: Application that made the change (SellerIntegrationApi or Seller
+                            Center Orders BFF)
+                        executorUser:
+                          type: string
+                          description: User email who made the action
+                    date:
+                      type: integer
+                      format: int64
+                      description: Update date (timestamp)
+              example:
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: ''
+                newStatus: Created
+                userInfoDocument:
+                  executorId: 328e8073-d898-11eb-b199-d6f52af37563
+                  executorApp: Seller Center Orders BFF
+                  executorUser: user@mail.com
+                date: 1624943376430
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: WaitingInAction
+                newStatus: Accepted
+                userInfoDocument:
+                  executorId: 41038394-d898-11eb-9b23-caa176587e6c
+                  executorApp: SellerIntegrationApi
+                  executorUser: user@mail.com
+                date: 1624943400249
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: Created
+                newStatus: WaitingInAction
+                userInfoDocument:
+                  executorId: 328e8073-d898-11eb-b199-d6f52af37563
+                  executorApp: Seller Center Orders BFF
+                  executorUser: user@mail.com
+                date: 1624943381690
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/tracking-details-rejected-europe:
+    put:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Rejected Package Update Tracking Number
+      description: This method should be use to notify Trendyol to the order's package tracking number
+      operationId: updateRejectedTrackingNumberEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - cargoSenderNumber
+              - providerCode
+              properties:
+                cargoSenderNumber:
+                  type: string
+                  description: Cargo sender number
+                providerCode:
+                  type: string
+                  description: Provider code
+            example:
+              cargoSenderNumber: '1111111111'
+              providerCode: DHLMP
+      responses:
+        '200':
+          description: HTTP 200
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/create-gulf:
+    post:
+      tags:
+      - Returned Orders Integration - GULF
+      summary: Create a Return Request (Created Status)
+      description: You can use it to create return request packages for order packages that arrive without
+        a return code.
+      operationId: createClaimGulf
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimItems
+              - customerId
+              - orderNumber
+              - shipmentCompanyId
+              properties:
+                claimItems:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - barcode
+                    - quantity
+                    - reasonId
+                    properties:
+                      barcode:
+                        type: string
+                        description: It is the barcode information of the product in the order.
+                        example: string
+                      customerNote:
+                        type: string
+                        description: It is the field written by customers. If you wish, you can feed this
+                          field with a text such as "Return without return code".
+                        example: string
+                      quantity:
+                        type: integer
+                        description: It is the quantity information of the product you want to create
+                          a return request.
+                        example: 0
+                      reasonId:
+                        type: integer
+                        description: These are the reasons for return selected by customers on trendyol.com.
+                          You can feed this id value as "I give up" with 401 id value for now.
+                        example: 401
+                customerId:
+                  type: integer
+                  format: int64
+                  description: It is the id value of the customer who take the order on Trendyol.
+                  example: 0
+                excludeListing:
+                  type: boolean
+                  description: Exclude from listing
+                  example: true
+                forcePackageCreation:
+                  type: boolean
+                  description: Force package creation
+                  example: true
+                orderNumber:
+                  type: string
+                  description: The number of the order.
+                  example: string
+                shipmentCompanyId:
+                  type: integer
+                  description: You can use the id value of the cargo company you have worked with. Should
+                    be 100 as a default.
+                  example: 100
+            example:
+              claimItems:
+              - barcode: string
+                customerNote: string
+                quantity: 0
+                reasonId: 401
+              customerId: 0
+              excludeListing: true
+              forcePackageCreation: true
+              orderNumber: string
+              shipmentCompanyId: 100
+      responses:
+        '200':
+          description: Claim created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  claimId:
+                    type: string
+                    description: The created claim ID
+                  cargoTrackingNumber:
+                    type: integer
+                    format: int64
+                    description: Cargo tracking number for the return
+                  claimItemIds:
+                    type: array
+                    items:
+                      type: string
+                    description: Array of created claim item IDs
+              example:
+                claimId: string
+                cargoTrackingNumber: 733xxxxxxx
+                claimItemIds:
+                - string
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims-gulf:
+    get:
+      tags:
+      - Returned Orders Integration - GULF
+      summary: Getting Returned Orders
+      description: This method enables you to retrieve information about returned orders from the Trendyol
+        system.
+      operationId: getClaimsGulf
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      - name: claimIds
+        in: query
+        required: false
+        schema:
+          type: string
+        description: See details of specific claim packages (comma separated)
+      - name: claimItemStatus
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - Created
+          - WaitingInAction
+          - Accepted
+          - Cancelled
+          - Rejected
+          - Unresolved
+          - InAnalysis
+        description: Filter by claim status
+      - name: startDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        description: Start date (timestamp)
+      - name: endDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        description: End date (timestamp)
+      - name: orderNumber
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The order number of the claim package
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+        description: Page number
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+        description: Maximum number of items per page
+      responses:
+        '200':
+          description: Successful response with claim details including replacement package info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalElements:
+                    type: integer
+                    description: Total number of elements
+                    example: 2099
+                  totalPages:
+                    type: integer
+                    description: Total number of pages
+                    example: 2099
+                  page:
+                    type: integer
+                    description: Current page number
+                    example: 0
+                  size:
+                    type: integer
+                    description: Page size
+                    example: 1
+                  content:
+                    type: array
+                    description: Array of claim objects
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Claim ID
+                        claimId:
+                          type: string
+                          description: Claim ID
+                        orderNumber:
+                          type: string
+                          description: Order number
+                        orderDate:
+                          type: integer
+                          format: int64
+                          description: Order date (timestamp)
+                        customerFirstName:
+                          type: string
+                          description: Customer first name
+                        customerLastName:
+                          type: string
+                          description: Customer last name
+                        claimDate:
+                          type: integer
+                          format: int64
+                          description: Claim date (timestamp in GMT)
+                        cargoTrackingNumber:
+                          type: integer
+                          format: int64
+                          description: Cargo tracking number
+                        cargoTrackingLink:
+                          type: string
+                          description: Cargo tracking link
+                        cargoSenderNumber:
+                          type: string
+                          description: Cargo sender number
+                        cargoProviderName:
+                          type: string
+                          description: Cargo provider name
+                        orderShipmentPackageId:
+                          type: integer
+                          format: int64
+                          description: Order shipment package ID
+                        replacementOutboundpackageinfo:
+                          type: object
+                          description: Replacement package info (GULF only - will return empty if there
+                            is no replacement)
+                          properties:
+                            cargoTrackingNumber:
+                              type: integer
+                              format: int64
+                            cargoProviderName:
+                              type: string
+                            cargoSenderNumber:
+                              type: string
+                            cargoTrackingLink:
+                              type: string
+                            packageid:
+                              type: integer
+                              format: int64
+                              description: Replacement packet ID information
+                            items:
+                              type: array
+                              items:
+                                type: string
+                              description: Array of claim item IDs
+                        rejectedpackageinfo:
+                          type: object
+                          description: Rejected package information (if available)
+                          properties:
+                            cargoTrackingNumber:
+                              type: integer
+                              format: int64
+                            cargoSenderNumber:
+                              type: string
+                            cargoProviderName:
+                              type: string
+                            cargoTrackingLink:
+                              type: string
+                            packageid:
+                              type: integer
+                              format: int64
+                              description: Rejected return package ID
+                            shipmentAddress:
+                              type: object
+                              properties:
+                                address1:
+                                  type: string
+                                address2:
+                                  type: string
+                                city:
+                                  type: string
+                                district:
+                                  type: string
+                                phone:
+                                  type: string
+                            items:
+                              type: array
+                              items:
+                                type: string
+                              description: Array of claim item IDs
+                            dontShipBack:
+                              type: boolean
+                              description: Indicates that the product should not be shipped back
+                        items:
+                          type: array
+                          description: Array of order line items
+                          items:
+                            type: object
+                            properties:
+                              orderLine:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                    format: int64
+                                  productName:
+                                    type: string
+                                  barcode:
+                                    type: string
+                                  merchantSku:
+                                    type: string
+                                  productColor:
+                                    type: string
+                                  productSize:
+                                    type: string
+                                  price:
+                                    type: number
+                                    format: double
+                                  vatBaseAmount:
+                                    type: number
+                                    format: double
+                                  vatRate:
+                                    type: number
+                                    format: double
+                                  salesCampaignId:
+                                    type: integer
+                                    format: int64
+                                  productCategory:
+                                    type: string
+                              claimItems:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                      description: Claim line item ID
+                                    orderLineItemId:
+                                      type: integer
+                                      format: int64
+                                    customerClaimItemReason:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        externalReasonId:
+                                          type: integer
+                                        code:
+                                          type: string
+                                    trendyolClaimItemReason:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        externalReasonId:
+                                          type: integer
+                                        code:
+                                          type: string
+                                    claimItemStatus:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          description: Status name (Created, WaitingInAction, Accepted,
+                                            etc.)
+                                    note:
+                                      type: string
+                                    customerNote:
+                                      type: string
+                                    resolved:
+                                      type: boolean
+                                    autoAccepted:
+                                      type: boolean
+                                      description: Returns which are waiting in actions for 48 hours are
+                                        automatically accepted by the system
+                                    acceptedBySeller:
+                                      type: boolean
+                                      description: Returns accepted by the seller
+                                    acceptDetail:
+                                      type: string
+                                      description: SUPPLIER, DISPUTE, or SYSTEM
+                        lastModifiedDate:
+                          type: integer
+                          format: int64
+                          description: Last modified date (timestamp)
+                        orderOutboundPackageId:
+                          type: integer
+                          format: int64
+                          description: Order outbound package ID
+              example:
+                totalElements: 2099
+                totalPages: 2099
+                page: 0
+                size: 1
+                content:
+                - id: f9da2317-876b-4b86-b8f7-0535c3b65731
+                  claimId: f9da2317-876b-4b86-b8f7-0535c3b65731
+                  orderNumber: '65745805'
+                  orderDate: 1524826343886
+                  customerFirstName: Trendyol
+                  customerLastName: Müşterisi
+                  claimDate: 1525844162827
+                  cargoTrackingNumber: 72602420957047276000
+                  cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                  cargoSenderNumber: '8106459254413'
+                  cargoProviderName: Aras Kargo Marketplace
+                  orderShipmentPackageId: 3853354
+                  replacementOutboundpackageinfo:
+                    cargoTrackingNumber: 72602420957047276000
+                    cargoProviderName: Aras Kargo Marketplace
+                    cargoSenderNumber: '733861966410'
+                    cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                    packageid: 28717254
+                    items:
+                    - b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                  rejectedpackageinfo:
+                    cargoTrackingNumber: 72602420957047276000
+                    cargoSenderNumber: '12345754875355'
+                    cargoProviderName: Aras Kargo Marketplace
+                    cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                    packageid: 28717254
+                    shipmentAddress:
+                      address1: xyz
+                      address2: xyz
+                      city: xyz
+                      district: xyz
+                      phone: '123456789'
+                    items:
+                    - b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                    dontShipBack: false
+                  items:
+                  - orderLine:
+                      id: 28717254
+                      productName: Erkek Bebek Sandalet 8S5280Z1/GREEN CS4, 21
+                      barcode: '99999999999'
+                      merchantSku: '2083667'
+                      productColor: GREEN CS4
+                      productSize: ' 21'
+                      price: 12.95
+                      vatBaseAmount: 8
+                      vatRate: 8
+                      salesCampaignId: 183631
+                      productCategory: Sandalet
+                    claimItems:
+                    - id: b71461e3-d1a0-4c1d-9a6d-18ecbcb5158c
+                      orderLineItemId: 29815493
+                      customerClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      trendyolClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      claimItemStatus:
+                        name: Created
+                      note: ''
+                      customerNote: Customer note
+                      resolved: false
+                      autoAccepted: false
+                      acceptedBySeller: true
+                      acceptDetail: SUPPLIER
+                  - orderLine:
+                      id: 28717255
+                      productName: Erkek Bebek Soket Çorap 4'lü 8S7346Z1/MIX YARN DYED K00, 6-12 Ay
+                      barcode: '99999999999'
+                      merchantSku: '2052551'
+                      productColor: MIX YARN DYED K00
+                      productSize: ' 17-18 (6-12 Ay)'
+                      price: 9.95
+                      vatBaseAmount: 8
+                      vatRate: 8
+                      salesCampaignId: 183631
+                      productCategory: Çorap
+                    claimItems:
+                    - id: b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                      orderLineItemId: 29815494
+                      customerClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      trendyolClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      claimItemStatus:
+                        name: Created
+                      note: ''
+                      customerNote: Customer note
+                      resolved: false
+                      autoAccepted: false
+                      acceptedBySeller: true
+                      acceptDetail: SUPPLIER
+                  lastModifiedDate: 1723275767111
+                  orderOutboundPackageId: 58835111
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/{claimId}/items/approve-gulf:
+    put:
+      tags:
+      - Returned Orders Integration - GULF
+      summary: Approve Returned Orders
+      description: In Trendyol system, you can confirm the return orders that are returned to your warehouse
+        by means of this method.
+      operationId: approveClaimLineItemsGulf
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimLineItemIdList
+              properties:
+                claimLineItemIdList:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of claim line item IDs to approve
+                  example:
+                  - f9da2317-876b-4b86-b8f7-0535c3b65731
+                params:
+                  type: object
+                  description: Additional parameters
+      responses:
+        '200':
+          description: Claim items approved successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/{claimId}/issue-gulf:
+    post:
+      tags:
+      - Returned Orders Integration - GULF
+      summary: Reject Returned Orders
+      description: 'You can create a rejection request for returned orders in your warehouse.
+
+        You can attach files related to the return (pdf, jpeg, etc.) as "form-data (file)".
+
+        '
+      operationId: createClaimIssueGulf
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - claimIssueReasonId
+              - claimItemIdList
+              - description
+              properties:
+                claimIssueReasonId:
+                  type: integer
+                  format: int64
+                  description: Claim issue reason ID
+                claimItemIdList:
+                  type: string
+                  description: Comma-separated list of claim item IDs
+                description:
+                  type: string
+                  maxLength: 500
+                  description: Description of the rejection
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Attachments (pdf, jpeg, etc.)
+      responses:
+        '200':
+          description: Claim issue created successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/claim-issue-reasons-gulf:
+    get:
+      tags:
+      - Returned Orders Integration - GULF
+      summary: Claim Issue Reasons
+      description: You can access the claimIssueReasonId value to be sent to the createClaimIssue service
+        by using this service.
+      operationId: getClaimsIssueReasonsGulf
+      parameters:
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      responses:
+        '200':
+          description: Successful response with array of claim issue reasons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Reason ID
+                    name:
+                      type: string
+                      description: Reason name
+              example:
+              - id: 51
+                name: The product received from the customer was used
+              - id: 201
+                name: The product received from the customer is wrong
+              - id: 251
+                name: The product received from the customer is defective/damaged
+              - id: 401
+                name: The product quantity received from the customer is missing
+              - id: 151
+                name: The product received from the customer is missing an accessory/part
+              - id: 1651
+                name: I did not receive the return package sent by the customer
+              - id: 2201
+                name: The item I sent is not missing
+              - id: 1751
+                name: The item I sent is not defective
+              - id: 1701
+                name: The item I sent is not incorrect
+              - id: 2151
+                name: I will send the invoice for the customer to get support from technical service
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/tracking-details-rejected-gulf:
+    put:
+      tags:
+      - Returned Orders Integration - GULF
+      summary: Rejected Package Update Tracking Number
+      description: This method should be use to notify Trendyol to the order's package tracking number.
+      operationId: updateRejectedTrackingNumberGulf
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - cargoSenderNumber
+              - providerCode
+              properties:
+                cargoSenderNumber:
+                  type: string
+                  description: Cargo sender number
+                providerCode:
+                  type: string
+                  description: Provider code
+            example:
+              cargoSenderNumber: '1111111111'
+              providerCode: DHLMP
+      responses:
+        '200':
+          description: HTTP 200
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/items/{claimItemsId}/audit-gulf:
+    get:
+      tags:
+      - Returned Orders Integration - GULF
+      summary: Get Claim Audit Information
+      description: With this service, you can check the status progress of the returned order, the update
+        date, the person who made the transaction.
+      operationId: getClaimAuditsGulf
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: claimItemsId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim item ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      responses:
+        '200':
+          description: Successful response with array of audit records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    claimId:
+                      type: string
+                      description: Claim ID
+                    claimItemId:
+                      type: string
+                      description: Claim item ID
+                    previousStatus:
+                      type: string
+                      description: Previous status (empty string for first status)
+                    newStatus:
+                      type: string
+                      description: New status
+                    userInfoDocument:
+                      type: object
+                      description: Information about who made the transaction
+                      properties:
+                        executorId:
+                          type: string
+                          description: Executor ID
+                        executorApp:
+                          type: string
+                          description: Application that made the change (SellerIntegrationApi or Seller
+                            Center Orders BFF)
+                        executorUser:
+                          type: string
+                          description: User email who made the action
+                    date:
+                      type: integer
+                      format: int64
+                      description: Update date (timestamp)
+              example:
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: ''
+                newStatus: Created
+                userInfoDocument:
+                  executorId: 328e8073-d898-11eb-b199-d6f52af37563
+                  executorApp: Seller Center Orders BFF
+                  executorUser: user@mail.com
+                date: 1624943376430
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: WaitingInAction
+                newStatus: Accepted
+                userInfoDocument:
+                  executorId: 41038394-d898-11eb-9b23-caa176587e6c
+                  executorApp: SellerIntegrationApi
+                  executorUser: user@mail.com
+                date: 1624943400249
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: Created
+                newStatus: WaitingInAction
+                userInfoDocument:
+                  executorId: 328e8073-d898-11eb-b199-d6f52af37563
+                  executorApp: Seller Center Orders BFF
+                  executorUser: user@mail.com
+                date: 1624943381690
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: Use your Trendyol API credentials
+security:
+- BasicAuth: []

@@ -1,0 +1,1059 @@
+openapi: 3.2.0
+info:
+  title: Trendyol International Marketplace Integration Returned Orders Integration - EUROPE API
+  description: API for Trendyol International Marketplace Order Integration
+  version: 1.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/g3cj88emnoazibu
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage Environment
+security:
+- BasicAuth: []
+tags:
+- name: Returned Orders Integration - EUROPE
+  description: Return operations and management for Europe (CEE) region. Note GULF and EUROPE regions use the same API endpoints, differentiated by the storeFrontCode header parameter.
+paths:
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/tracking-details:
+    put:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Update Tracking Number
+      description: 'This method should be used to notify Trendyol of the package tracking number.
+
+
+        **For Normal Order Packages:**
+
+        - Package status should be Picking before using this service
+
+        - Use appropriate storeFrontCode for the region
+
+
+        **For Rejected Return Packages (EUROPE & GULF):**
+
+        - Use this same endpoint to update tracking numbers for rejected return packages
+
+        - The packageId refers to the rejected return package ID
+
+        - If tracking code already exists, you will receive error "Shipment tracking number cannot be updated"
+
+
+        **Required:**
+
+        - storeFrontCode as Header Parameter (to differentiate regions)
+
+        - cargoSenderNumber and providerCode in request body
+
+        - returnTrackingNumber is optional (for Germany only)
+
+        '
+      operationId: updateTrackingNumber
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - cargoSenderNumber
+              - providerCode
+              properties:
+                cargoSenderNumber:
+                  type: string
+                  description: Cargo tracking number
+                  example: '123'
+                providerCode:
+                  type: string
+                  description: Cargo provider code
+                  example: DHLMP
+                returnTrackingNumber:
+                  type: string
+                  description: Return tracking number (optional, for Germany)
+                  example: '137456971563'
+      responses:
+        '200':
+          description: Tracking number updated successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/as-accepted:
+    post:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Create a Return Request (as-accepted)
+      description: You can use it to create return request packages for order packages that arrive without a return code.
+      operationId: createClaimAsAcceptedEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimItems
+              - orderParentNumber
+              properties:
+                claimItems:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - orderLineId
+                    - quantity
+                    properties:
+                      orderLineId:
+                        type: integer
+                        format: int64
+                        description: Order line ID
+                        example: 456
+                      quantity:
+                        type: integer
+                        description: Quantity to return
+                        example: 1
+                orderParentNumber:
+                  type: string
+                  description: The order number
+                  example: '1234567'
+      responses:
+        '200':
+          description: Claim created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  claimId:
+                    type: string
+                    description: The created claim ID
+                  claimItemIds:
+                    type: array
+                    items:
+                      type: string
+                    description: Array of created claim item IDs
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/create:
+    post:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Create a Return Request (createClaim)
+      description: You can use it to create return request packages for order packages that arrive without a return code.
+      operationId: createClaimEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimItems
+              - customerId
+              - orderNumber
+              - shipmentCompanyId
+              properties:
+                claimItems:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - barcode
+                    - quantity
+                    - reasonId
+                    properties:
+                      barcode:
+                        type: string
+                        description: The barcode information of the product in the order
+                      customerNote:
+                        type: string
+                        description: Field written by customers. You can feed this field with text such as Return without return code
+                      quantity:
+                        type: integer
+                        description: The quantity information of the product you want to create a return request
+                      reasonId:
+                        type: integer
+                        description: Return reasons selected by customers on trendyol.com. Available codes 2060 (Delayed international delivery), 2061 (Seller Originated Situations), 2044 (Analysis request), 2059 (Shipment is lost abroad), 2062 (Cargo Related Situations), 801 (Shipment arrived too late), 301 (Defective product was sent), 651 (Different from how it was shown/described), 2042 (I didn't like it), 701 (I ordered the wrong product), 2030 (Better price is available), 551 (Too big), 351 (Incorrect product was sent), 2043 (Missing product part/accessory), 501 (Too small), 2018 (Missing product), 751 (Other - Fraud-related), 1701 (Delayed Deliveries), 851 (Package was damaged), 401 (Changed my mind), 2015 (Undelivered Shipment), 2017 (Compensation), 2019 (Undelivered International Shipment), 2021 (Shipment tracking link couldn't created), 2022 (Unsupplied product), 2038 (Returned while in delivery status)
+                        example: 401
+                        enum:
+                        - 2060
+                        - 2061
+                        - 2044
+                        - 2059
+                        - 2062
+                        - 801
+                        - 301
+                        - 651
+                        - 2042
+                        - 701
+                        - 2030
+                        - 551
+                        - 351
+                        - 2043
+                        - 501
+                        - 2018
+                        - 751
+                        - 1701
+                        - 851
+                        - 401
+                        - 2015
+                        - 2017
+                        - 2019
+                        - 2021
+                        - 2022
+                        - 2038
+                customerId:
+                  type: integer
+                  format: int64
+                  description: The id value of the customer who took the order on Trendyol
+                excludeListing:
+                  type: boolean
+                  description: Exclude from listing
+                forcePackageCreation:
+                  type: boolean
+                  description: Force package creation
+                orderNumber:
+                  type: string
+                  description: The number of the order
+                shipmentCompanyId:
+                  type: integer
+                  description: The id value of the cargo company you have worked with (should be 100 as default)
+                  example: 100
+      responses:
+        '200':
+          description: Claim created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  claimId:
+                    type: string
+                    description: The created claim ID
+                  cargoTrackingNumber:
+                    type: integer
+                    format: int64
+                    description: Cargo tracking number for the return
+                  claimItemIds:
+                    type: array
+                    items:
+                      type: string
+                    description: Array of created claim item IDs
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims:
+    get:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Getting Returned Orders
+      description: This method enables you to retrieve information about returned orders from the Trendyol system.
+      operationId: getClaimsEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      - name: claimIds
+        in: query
+        required: false
+        schema:
+          type: string
+        description: See details of specific claim packages (comma separated)
+      - name: claimItemStatus
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - Created
+          - WaitingInAction
+          - Accepted
+          - Cancelled
+          - Rejected
+          - Unresolved
+          - InAnalysis
+        description: Filter by claim status
+      - name: startDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        description: Start date (timestamp)
+      - name: endDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        description: End date (timestamp)
+      - name: orderNumber
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The order number of the claim package
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+        description: Page number
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+        description: Maximum number of items per page
+      responses:
+        '200':
+          description: Successful response with claim details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalElements:
+                    type: integer
+                    description: Total number of elements
+                    example: 2099
+                  totalPages:
+                    type: integer
+                    description: Total number of pages
+                    example: 2099
+                  page:
+                    type: integer
+                    description: Current page number
+                    example: 0
+                  size:
+                    type: integer
+                    description: Page size
+                    example: 1
+                  content:
+                    type: array
+                    description: Array of claim objects
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Claim ID
+                        claimId:
+                          type: string
+                          description: Claim ID
+                        orderNumber:
+                          type: string
+                          description: Order number
+                        orderDate:
+                          type: integer
+                          format: int64
+                          description: Order date (timestamp)
+                        customerFirstName:
+                          type: string
+                          description: Customer first name
+                        customerLastName:
+                          type: string
+                          description: Customer last name
+                        claimDate:
+                          type: integer
+                          format: int64
+                          description: Claim date (timestamp in GMT)
+                        cargoTrackingNumber:
+                          type: integer
+                          format: int64
+                          description: Cargo tracking number
+                        cargoTrackingLink:
+                          type: string
+                          description: Cargo tracking link
+                        cargoSenderNumber:
+                          type: string
+                          description: Cargo sender number
+                        cargoProviderName:
+                          type: string
+                          description: Cargo provider name
+                        orderShipmentPackageId:
+                          type: integer
+                          format: int64
+                          description: Order shipment package ID
+                        replacementOutboundpackageinfo:
+                          type: object
+                          description: Replacement outbound package information (empty if no replacement)
+                          properties:
+                            cargoTrackingNumber:
+                              type: integer
+                              format: int64
+                            cargoProviderName:
+                              type: string
+                            cargoSenderNumber:
+                              type: string
+                            cargoTrackingLink:
+                              type: string
+                            packageid:
+                              type: integer
+                              format: int64
+                              description: Replacement packet ID information
+                            items:
+                              type: array
+                              items:
+                                type: string
+                              description: Array of claim item IDs
+                        rejectedpackageinfo:
+                          type: object
+                          description: Rejected package information (if available)
+                          properties:
+                            cargoTrackingNumber:
+                              type: integer
+                              format: int64
+                            cargoSenderNumber:
+                              type: string
+                            cargoProviderName:
+                              type: string
+                            cargoTrackingLink:
+                              type: string
+                            packageid:
+                              type: integer
+                              format: int64
+                              description: Rejected return package ID
+                            shipmentAddress:
+                              type: object
+                              properties:
+                                address1:
+                                  type: string
+                                address2:
+                                  type: string
+                                city:
+                                  type: string
+                                district:
+                                  type: string
+                                phone:
+                                  type: string
+                            items:
+                              type: array
+                              items:
+                                type: string
+                              description: Array of claim item IDs
+                            dontShipBack:
+                              type: boolean
+                              description: Indicates that the product should not be shipped back
+                        items:
+                          type: array
+                          description: Array of order line items
+                          items:
+                            type: object
+                            properties:
+                              orderLine:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                    format: int64
+                                  productName:
+                                    type: string
+                                  barcode:
+                                    type: string
+                                  merchantSku:
+                                    type: string
+                                  productColor:
+                                    type: string
+                                  productSize:
+                                    type: string
+                                  price:
+                                    type: number
+                                    format: double
+                                  vatBaseAmount:
+                                    type: number
+                                    format: double
+                                  vatRate:
+                                    type: number
+                                    format: double
+                                  salesCampaignId:
+                                    type: integer
+                                    format: int64
+                                  productCategory:
+                                    type: string
+                              claimItems:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                      description: Claim line item ID
+                                    orderLineItemId:
+                                      type: integer
+                                      format: int64
+                                    customerClaimItemReason:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        externalReasonId:
+                                          type: integer
+                                        code:
+                                          type: string
+                                    trendyolClaimItemReason:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        externalReasonId:
+                                          type: integer
+                                        code:
+                                          type: string
+                                    claimItemStatus:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          description: Status name (Created, WaitingInAction, Accepted, etc.)
+                                    note:
+                                      type: string
+                                    customerNote:
+                                      type: string
+                                    resolved:
+                                      type: boolean
+                                    autoAccepted:
+                                      type: boolean
+                                      description: Returns which are waiting in actions for 48 hours are automatically accepted by the system
+                                    acceptedBySeller:
+                                      type: boolean
+                                      description: Returns accepted by the seller
+                                    acceptDetail:
+                                      type: string
+                                      description: SUPPLIER, DISPUTE, or SYSTEM
+                        lastModifiedDate:
+                          type: integer
+                          format: int64
+                          description: Last modified date (timestamp)
+                        orderOutboundPackageId:
+                          type: integer
+                          format: int64
+                          description: Order outbound package ID
+              example:
+                totalElements: 2099
+                totalPages: 2099
+                page: 0
+                size: 1
+                content:
+                - id: f9da2317-876b-4b86-b8f7-0535c3b65731
+                  claimId: f9da2317-876b-4b86-b8f7-0535c3b65731
+                  orderNumber: '65745805'
+                  orderDate: 1524826343886
+                  customerFirstName: Trendyol
+                  customerLastName: Müşterisi
+                  claimDate: 1525844162827
+                  cargoTrackingNumber: 72602420957047276000
+                  cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                  cargoSenderNumber: '8106459254413'
+                  cargoProviderName: Aras Kargo Marketplace
+                  orderShipmentPackageId: 3853354
+                  replacementOutboundpackageinfo:
+                    cargoTrackingNumber: 72602420957047276000
+                    cargoProviderName: Aras Kargo Marketplace
+                    cargoSenderNumber: '733861966410'
+                    cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                    packageid: 28717254
+                    items:
+                    - b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                  rejectedpackageinfo:
+                    cargoTrackingNumber: 72602420957047276000
+                    cargoSenderNumber: '12345754875355'
+                    cargoProviderName: Aras Kargo Marketplace
+                    cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                    packageid: 28717254
+                    shipmentAddress:
+                      address1: xyz
+                      address2: xyz
+                      city: xyz
+                      district: xyz
+                      phone: '123456789'
+                    items:
+                    - b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                    dontShipBack: false
+                  items:
+                  - orderLine:
+                      id: 28717254
+                      productName: Erkek Bebek Sandalet 8S5280Z1/GREEN CS4, 21
+                      barcode: '99999999999'
+                      merchantSku: '2083667'
+                      productColor: GREEN CS4
+                      productSize: ' 21'
+                      price: 12.95
+                      vatBaseAmount: 8
+                      vatRate: 8
+                      salesCampaignId: 183631
+                      productCategory: Sandalet
+                    claimItems:
+                    - id: b71461e3-d1a0-4c1d-9a6d-18ecbcb5158c
+                      orderLineItemId: 29815493
+                      customerClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      trendyolClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      claimItemStatus:
+                        name: Created
+                      note: ''
+                      customerNote: Customer note
+                      resolved: false
+                      autoAccepted: false
+                      acceptedBySeller: true
+                      acceptDetail: SUPPLIER
+                  - orderLine:
+                      id: 28717255
+                      productName: Erkek Bebek Soket Çorap 4'lü 8S7346Z1/MIX YARN DYED K00, 6-12 Ay
+                      barcode: '99999999999'
+                      merchantSku: '2052551'
+                      productColor: MIX YARN DYED K00
+                      productSize: ' 17-18 (6-12 Ay)'
+                      price: 9.95
+                      vatBaseAmount: 8
+                      vatRate: 8
+                      salesCampaignId: 183631
+                      productCategory: Çorap
+                    claimItems:
+                    - id: b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                      orderLineItemId: 29815494
+                      customerClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      trendyolClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      claimItemStatus:
+                        name: Created
+                      note: ''
+                      customerNote: Customer note
+                      resolved: false
+                      autoAccepted: false
+                      acceptedBySeller: true
+                      acceptDetail: SUPPLIER
+                  lastModifiedDate: 1723275767111
+                  orderOutboundPackageId: 58835111
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/{claimId}/items/approve:
+    put:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Approve Returned Orders
+      description: You can confirm the return orders that are returned to your warehouse by means of this method.
+      operationId: approveClaimLineItemsEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimLineItemIdList
+              properties:
+                claimLineItemIdList:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of claim line item IDs to approve
+                  example:
+                  - f9da2317-876b-4b86-b8f7-0535c3b65731
+                params:
+                  type: object
+                  description: Additional parameters
+      responses:
+        '200':
+          description: Claim items approved successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/{claimId}/issue:
+    post:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Reject Returned Orders
+      description: 'You can create a rejection request for returned orders in your warehouse.
+
+        You can attach files related to the return (pdf, jpeg, etc.) as "form-data (file)".
+
+        '
+      operationId: createClaimIssueEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - claimIssueReasonId
+              - claimItemIdList
+              - description
+              properties:
+                claimIssueReasonId:
+                  type: integer
+                  format: int64
+                  description: Claim issue reason ID
+                claimItemIdList:
+                  type: string
+                  description: Comma-separated list of claim item IDs
+                description:
+                  type: string
+                  maxLength: 500
+                  description: Description of the rejection
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Attachments (pdf, jpeg, etc.)
+      responses:
+        '200':
+          description: Claim issue created successfully
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/claim-issue-reasons:
+    get:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Claim Issue Reasons
+      description: You can access the claimIssueReasonId value to be sent to the createClaimIssue service by using this service.
+      operationId: getClaimsIssueReasonsEurope
+      parameters:
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      responses:
+        '200':
+          description: Successful response with array of claim issue reasons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Reason ID
+                    name:
+                      type: string
+                      description: Reason name
+              example:
+              - id: 51
+                name: The product received from the customer was used
+              - id: 201
+                name: The product received from the customer is wrong
+              - id: 251
+                name: The product received from the customer is defective/damaged
+              - id: 401
+                name: The product quantity received from the customer is missing
+              - id: 151
+                name: The product received from the customer is missing an accessory/part
+              - id: 1651
+                name: I did not receive the return package sent by the customer
+              - id: 2201
+                name: The item I sent is not missing
+              - id: 1751
+                name: The item I sent is not defective
+              - id: 1701
+                name: The item I sent is not incorrect
+              - id: 2151
+                name: I will send the invoice for the customer to get support from technical service
+              - id: 2051
+                name: A hygienic product's package has been opened
+              - id: 451
+                name: I'll send the returned item for analysis
+              - id: 1801
+                name: No production/manufacturing-related issue was found.
+              - id: 1851
+                name: The product has been replaced
+              - id: 1901
+                name: The product has been repaired
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/claims/items/{claimItemsId}/audit:
+    get:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Get Claim Audit Information
+      description: With this service, you can check the status progress of the returned order, the update date, the person who made the transaction.
+      operationId: getClaimAuditsEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: claimItemsId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim item ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      responses:
+        '200':
+          description: Successful response with array of audit records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    claimId:
+                      type: string
+                      description: Claim ID
+                    claimItemId:
+                      type: string
+                      description: Claim item ID
+                    previousStatus:
+                      type: string
+                      description: Previous status (empty string for first status)
+                    newStatus:
+                      type: string
+                      description: New status
+                    userInfoDocument:
+                      type: object
+                      description: Information about who made the transaction
+                      properties:
+                        executorId:
+                          type: string
+                          description: Executor ID
+                        executorApp:
+                          type: string
+                          description: Application that made the change (SellerIntegrationApi or Seller Center Orders BFF)
+                        executorUser:
+                          type: string
+                          description: User email who made the action
+                    date:
+                      type: integer
+                      format: int64
+                      description: Update date (timestamp)
+              example:
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: ''
+                newStatus: Created
+                userInfoDocument:
+                  executorId: 328e8073-d898-11eb-b199-d6f52af37563
+                  executorApp: Seller Center Orders BFF
+                  executorUser: user@mail.com
+                date: 1624943376430
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: WaitingInAction
+                newStatus: Accepted
+                userInfoDocument:
+                  executorId: 41038394-d898-11eb-9b23-caa176587e6c
+                  executorApp: SellerIntegrationApi
+                  executorUser: user@mail.com
+                date: 1624943400249
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: Created
+                newStatus: WaitingInAction
+                userInfoDocument:
+                  executorId: 328e8073-d898-11eb-b199-d6f52af37563
+                  executorApp: Seller Center Orders BFF
+                  executorUser: user@mail.com
+                date: 1624943381690
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+  /order/sellers/{sellerId}/shipment-packages/{packageId}/tracking-details-rejected-europe:
+    put:
+      tags:
+      - Returned Orders Integration - EUROPE
+      summary: Rejected Package Update Tracking Number
+      description: This method should be use to notify Trendyol to the order's package tracking number
+      operationId: updateRejectedTrackingNumberEurope
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Package ID
+      - name: storeFrontCode
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Store front code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - cargoSenderNumber
+              - providerCode
+              properties:
+                cargoSenderNumber:
+                  type: string
+                  description: Cargo sender number
+                providerCode:
+                  type: string
+                  description: Provider code
+            example:
+              cargoSenderNumber: '1111111111'
+              providerCode: DHLMP
+      responses:
+        '200':
+          description: HTTP 200
+        '400':
+          description: Client error
+        '500':
+          description: Internal server error
+      security:
+      - BasicAuth: []
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: Use your Trendyol API credentials

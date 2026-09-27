@@ -1,0 +1,772 @@
+openapi: 3.2.0
+info:
+  title: Trendyol Marketplace Integration Returned Orders Integration API
+  description: API for Trendyol Domestic Marketplace Order and Return Integration
+  version: 1.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/on76bmnoawy6i
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production Environment
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage Environment
+security:
+- basicAuth: []
+tags:
+- name: Returned Orders Integration
+  description: Return operations and management
+paths:
+  /order/sellers/{sellerId}/claims:
+    get:
+      tags:
+      - Returned Orders Integration
+      summary: Getting Returned Orders - getClaims
+      description: This method enables you to retrieve information about returned orders from the Trendyol system.
+      operationId: getClaims
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: startDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: endDate
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          maximum: 200
+      - name: claimItemStatus
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - Created
+          - WaitingInAction
+          - WaitingFraudCheck
+          - Accepted
+          - Unresolved
+          - Rejected
+          - Cancelled
+          - InAnalysis
+      - name: orderNumber
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The order number of the claim package
+      - name: claimIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalElements:
+                    type: integer
+                    description: Total number of elements
+                  totalPages:
+                    type: integer
+                    description: Total number of pages
+                  page:
+                    type: integer
+                    description: Current page number
+                  size:
+                    type: integer
+                    description: Page size
+                  content:
+                    type: array
+                    description: Array of claim objects
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Claim ID
+                        claimId:
+                          type: string
+                          description: Claim ID
+                        orderNumber:
+                          type: string
+                          description: Order number
+                        orderDate:
+                          type: integer
+                          format: int64
+                          description: Order date (timestamp)
+                        customerFirstName:
+                          type: string
+                          description: Customer first name
+                        customerLastName:
+                          type: string
+                          description: Customer last name
+                        claimDate:
+                          type: integer
+                          format: int64
+                          description: Claim date (timestamp in GMT)
+                        cargoTrackingNumber:
+                          type: integer
+                          format: int64
+                          description: Cargo tracking number
+                        cargoTrackingLink:
+                          type: string
+                          description: Cargo tracking link
+                        cargoSenderNumber:
+                          type: string
+                          description: Cargo sender number
+                        cargoProviderName:
+                          type: string
+                          description: Cargo provider name
+                        orderShipmentPackageId:
+                          type: integer
+                          format: int64
+                          description: Order shipment package ID
+                        replacementOutboundpackageinfo:
+                          type: object
+                          description: Replacement outbound package information (empty if no replacement)
+                          properties:
+                            cargoTrackingNumber:
+                              type: integer
+                              format: int64
+                            cargoProviderName:
+                              type: string
+                            cargoSenderNumber:
+                              type: string
+                            cargoTrackingLink:
+                              type: string
+                            packageid:
+                              type: integer
+                              format: int64
+                              description: Replacement packet ID information
+                            items:
+                              type: array
+                              items:
+                                type: string
+                              description: Array of claim item IDs
+                        rejectedpackageinfo:
+                          type: object
+                          description: Rejected package information (if available)
+                          properties:
+                            cargoTrackingNumber:
+                              type: integer
+                              format: int64
+                            cargoSenderNumber:
+                              type: string
+                            cargoProviderName:
+                              type: string
+                            cargoTrackingLink:
+                              type: string
+                            packageid:
+                              type: integer
+                              format: int64
+                              description: Rejected return package ID
+                            items:
+                              type: array
+                              items:
+                                type: string
+                              description: Array of claim item IDs
+                            dontShipBack:
+                              type: boolean
+                              description: Indicates that the product should not be shipped back
+                        items:
+                          type: array
+                          description: Array of order line items
+                          items:
+                            type: object
+                            properties:
+                              orderLine:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                    format: int64
+                                  productName:
+                                    type: string
+                                  barcode:
+                                    type: string
+                                  merchantSku:
+                                    type: string
+                                  productColor:
+                                    type: string
+                                  productSize:
+                                    type: string
+                                  price:
+                                    type: number
+                                    format: double
+                                  vatBaseAmount:
+                                    type: number
+                                    format: double
+                                  vatRate:
+                                    type: number
+                                    format: double
+                                  salesCampaignId:
+                                    type: integer
+                                    format: int64
+                                  productCategory:
+                                    type: string
+                              claimItems:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                      description: Claim line item ID
+                                    orderLineItemId:
+                                      type: integer
+                                      format: int64
+                                    customerClaimItemReason:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        externalReasonId:
+                                          type: integer
+                                        code:
+                                          type: string
+                                    trendyolClaimItemReason:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        externalReasonId:
+                                          type: integer
+                                        code:
+                                          type: string
+                                    claimItemStatus:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          description: Status name
+                                    note:
+                                      type: string
+                                    customerNote:
+                                      type: string
+                                    resolved:
+                                      type: boolean
+                                    autoAccepted:
+                                      type: boolean
+                                      description: Returns which are waiting in actions for 48 hours are automatically accepted by the system
+                                    acceptedBySeller:
+                                      type: boolean
+                                      description: Returns accepted by the seller
+                                    acceptDetail:
+                                      type: string
+                                      description: SUPPLIER, DISPUTE, or SYSTEM
+                        lastModifiedDate:
+                          type: integer
+                          format: int64
+                          description: Last modified date (timestamp)
+                        orderOutboundPackageId:
+                          type: integer
+                          format: int64
+                          description: Order outbound package ID
+              example:
+                totalElements: 2099
+                totalPages: 2099
+                page: 0
+                size: 1
+                content:
+                - id: f9da2317-876b-4b86-b8f7-0535c3b65731
+                  claimId: f9da2317-876b-4b86-b8f7-0535c3b65731
+                  orderNumber: '65745805'
+                  orderDate: 1524826343886
+                  customerFirstName: Trendyol
+                  customerLastName: Müşterisi
+                  claimDate: 1525844162827
+                  cargoTrackingNumber: 72602420957047276000
+                  cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                  cargoSenderNumber: '8106459254413'
+                  cargoProviderName: Aras Kargo Marketplace
+                  orderShipmentPackageId: 3853354
+                  replacementOutboundpackageinfo:
+                    cargoTrackingNumber: 72602420957047276000
+                    cargoProviderName: Aras Kargo Marketplace
+                    cargoSenderNumber: '733861966410'
+                    cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                    packageid: 28717254
+                    items:
+                    - b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                  rejectedpackageinfo:
+                    cargoTrackingNumber: 72602420957047276000
+                    cargoSenderNumber: '12345754875355'
+                    cargoProviderName: Aras Kargo Marketplace
+                    cargoTrackingLink: https://kargotakip.araskargo.com.tr/mainpage.aspx?code=90909090909
+                    packageid: 28717254
+                    items:
+                    - b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                    dontShipBack: false
+                  items:
+                  - orderLine:
+                      id: 28717254
+                      productName: Erkek Bebek Sandalet 8S5280Z1/GREEN CS4, 21
+                      barcode: '99999999999'
+                      merchantSku: '2083667'
+                      productColor: GREEN CS4
+                      productSize: ' 21'
+                      price: 12.95
+                      vatBaseAmount: 8
+                      vatRate: 8
+                      salesCampaignId: 183631
+                      productCategory: Sandalet
+                    claimItems:
+                    - id: b71461e3-d1a0-4c1d-9a6d-18ecbcb5158c
+                      orderLineItemId: 29815493
+                      customerClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      trendyolClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      claimItemStatus:
+                        name: Created
+                      note: ''
+                      customerNote: Customer note
+                      resolved: false
+                      autoAccepted: false
+                      acceptedBySeller: true
+                      acceptDetail: SUPPLIER
+                  - orderLine:
+                      id: 28717255
+                      productName: Erkek Bebek Soket Çorap 4'lü 8S7346Z1/MIX YARN DYED K00, 6-12 Ay
+                      barcode: '99999999999'
+                      merchantSku: '2052551'
+                      productColor: MIX YARN DYED K00
+                      productSize: ' 17-18 (6-12 Ay)'
+                      price: 9.95
+                      vatBaseAmount: 8
+                      vatRate: 8
+                      salesCampaignId: 183631
+                      productCategory: Çorap
+                    claimItems:
+                    - id: b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d
+                      orderLineItemId: 29815494
+                      customerClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      trendyolClaimItemReason:
+                        name: Beden uymama
+                        externalReasonId: 23
+                        code: UNFIT
+                      claimItemStatus:
+                        name: Created
+                      note: ''
+                      customerNote: Customer note
+                      resolved: false
+                      autoAccepted: false
+                      acceptedBySeller: true
+                      acceptDetail: SUPPLIER
+                  lastModifiedDate: 1723275767111
+                  orderOutboundPackageId: 58835111
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+  /order/sellers/{sellerId}/claims/create:
+    post:
+      tags:
+      - Returned Orders Integration
+      summary: Create a Return Request - createClaim
+      description: You can use it to create return request packages for order packages that arrive without a return code.
+      operationId: createClaim
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimItems
+              - orderNumber
+              properties:
+                claimItems:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - barcode
+                    - quantity
+                    - reasonId
+                    properties:
+                      barcode:
+                        type: string
+                        description: It is the barcode information of the product in the order.
+                        example: string
+                      customerNote:
+                        type: string
+                        description: It is the field written by customers. If you wish, you can feed this field with a text such as "Return without return code".
+                        example: string
+                      quantity:
+                        type: integer
+                        description: It is the quantity information of the product you want to create a return request.
+                        example: 0
+                      reasonId:
+                        type: integer
+                        description: These are the reasons for return selected by customers on trendyol.com. You can feed this id value as "I give up" with 401 id value for now.
+                        example: 401
+                customerId:
+                  type: integer
+                  format: int64
+                  description: It is the id value of the customer who take the order on Trendyol.
+                  example: 0
+                excludeListing:
+                  type: boolean
+                  description: Exclude from listing
+                  example: true
+                forcePackageCreation:
+                  type: boolean
+                  description: Force package creation
+                  example: true
+                orderNumber:
+                  type: string
+                  description: The number of the order.
+                  example: string
+                shipmentCompanyId:
+                  type: integer
+                  description: You can use the id value of the cargo company you have worked with.
+                  example: 4
+            example:
+              claimItems:
+              - barcode: string
+                customerNote: string
+                quantity: 0
+                reasonId: 401
+              customerId: 0
+              excludeListing: true
+              forcePackageCreation: true
+              orderNumber: string
+              shipmentCompanyId: 4
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  claimId:
+                    type: string
+                    description: The created claim ID
+                  cargoTrackingNumber:
+                    type: integer
+                    format: int64
+                    description: Cargo tracking number for the return
+                  claimItemIds:
+                    type: array
+                    items:
+                      type: string
+                    description: Array of created claim item IDs
+              example:
+                claimId: string
+                cargoTrackingNumber: 733xxxxxxx
+                claimItemIds:
+                - string
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+  /order/sellers/{sellerId}/claims/{claimId}/items/approve:
+    put:
+      tags:
+      - Returned Orders Integration
+      summary: Approve Returned Orders - approveClaimLineItems
+      description: In Trendyol system, you can confirm the return orders that are returned to your warehouse by means of this method.
+      operationId: approveClaimLineItems
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimLineItemIdList
+              properties:
+                claimLineItemIdList:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of claim line item IDs to approve
+                params:
+                  type: object
+                  description: Additional parameters
+                  additionalProperties:
+                    type: string
+            example:
+              claimLineItemIdList:
+              - f9da2317-876b-4b86-b8f7-0535c3b65731
+              params: {}
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+  /order/sellers/{sellerId}/claims/{claimId}/issue:
+    post:
+      tags:
+      - Returned Orders Integration
+      summary: Create a Rejection Request on Returned Orders - createClaimIssue
+      description: 'In Trendyol system, you can create a rejection request for returned orders in your warehouse.
+
+        You can attach files related to the return (pdf, jpeg, etc.) as "form-data (file)".
+
+        '
+      operationId: createClaimIssue
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Seller ID
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - claimIssueReasonId
+              - claimItemIdList
+              - description
+              properties:
+                claimIssueReasonId:
+                  type: integer
+                  format: int64
+                  description: Claim issue reason ID
+                claimItemIdList:
+                  type: string
+                  description: Comma-separated list of claim item IDs
+                description:
+                  type: string
+                  maxLength: 500
+                  description: Description of the rejection
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Attachments (pdf, jpeg, etc.)
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+  /order/claim-issue-reasons:
+    get:
+      tags:
+      - Returned Orders Integration
+      summary: Claim Issue Reasons - getClaimIssueReasons
+      description: You can access the claimIssueReasonId value to be sent to the createClaimIssue service by using this service.
+      operationId: getClaimIssueReasons
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Reason ID
+                    name:
+                      type: string
+                      description: Reason name in Turkish
+              example:
+              - id: 1
+                name: İade gelen ürün sahte
+              - id: 51
+                name: İade gelen ürün kullanılmış
+              - id: 201
+                name: İade gelen ürün yanlış
+              - id: 251
+                name: İade gelen ürün defolu / zarar görmüş
+              - id: 401
+                name: Eksik ürün
+              - id: 101
+                name: Fazla ürün
+              - id: 151
+                name: Ürünün bir parçası / aksesuarı eksik
+              - id: 301
+                name: Ürün bana ait değil
+              - id: 351
+                name: İade paketi boş geldi
+              - id: 1651
+                name: İade paketi elime ulaşmadı
+              - id: 1701
+                name: Ürün yanlış değil
+              - id: 1751
+                name: Ürün kusurlu değil
+              - id: 451
+                name: Diğer
+        '401':
+          description: Unauthorized
+  /order/sellers/{sellerId}/claims/items/{claimItemsId}/audit:
+    get:
+      tags:
+      - Returned Orders Integration
+      summary: Get Claim Audit Information - getClaimItemAudits
+      description: With this service, you can check the status progress of the returned order, the update date, the person who made the transaction.
+      operationId: getClaimItemAudits
+      parameters:
+      - name: sellerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: claimItemsId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Claim item ID
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    claimId:
+                      type: string
+                      description: Claim ID
+                    claimItemId:
+                      type: string
+                      description: Claim item ID
+                    previousStatus:
+                      type: string
+                      description: Previous status of the claim item
+                    newStatus:
+                      type: string
+                      description: New status of the claim item
+                    userInfoDocument:
+                      type: object
+                      properties:
+                        executorId:
+                          type: string
+                          description: Executor ID
+                        executorApp:
+                          type: string
+                          description: Shows from which platform the transaction was made
+                        executorUser:
+                          type: string
+                          description: Shows which user the action was taken by
+                    date:
+                      type: integer
+                      format: int64
+                      description: Update date timestamp
+              example:
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: ''
+                newStatus: Created
+                userInfoDocument:
+                  executorId: 328e8073-d898-11eb-b199-d6f52af37563
+                  executorApp: Seller Center Orders BFF
+                  executorUser: user@mail.com
+                date: 1624943376430
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: WaitingInAction
+                newStatus: Accepted
+                userInfoDocument:
+                  executorId: 41038394-d898-11eb-9b23-caa176587e6c
+                  executorApp: SellerIntegrationApi
+                  executorUser: user@mail.com
+                date: 1624943400249
+              - claimId: 6101ceca-1743-4d4e-bad2-d476c22542ca
+                claimItemId: f369b0a2-1461-4c9c-b3cc-12824d65e5e6
+                previousStatus: Created
+                newStatus: WaitingInAction
+                userInfoDocument:
+                  executorId: 328e8073-d898-11eb-b199-d6f52af37563
+                  executorApp: Seller Center Orders BFF
+                  executorUser: user@mail.com
+                date: 1624943381690
+        '401':
+          description: Unauthorized
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Seller API Key and API Secret with Basic Auth
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Bearer token authentication

@@ -1,0 +1,121 @@
+openapi: 3.2.0
+info:
+  title: Trendyol International Marketplace - Product Integration Batch Requests API
+  description: 'Trendyol International Marketplace product integration API services for non-TR sellers. Covers product creation (V2), filtering, updating, deletion, archiving, stock-price updating, buybox, unlock, and batch request tracking services.
+
+    '
+  version: 2.0.0
+  contact:
+    name: Trendyol Integration Support
+    email: entegrasyon@trendyol.com
+  x-source-url: https://dash.readme.com/api/v1/api-registry/yzfuk0mqjeocod
+  x-documentation-url: https://developers.trendyol.com/docs/getting-started
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://apigw.trendyol.com/integration
+  description: Production
+- url: https://stageapigw.trendyol.com/integration
+  description: Stage
+security:
+- basicAuth: []
+tags:
+- name: BatchRequests
+  description: Batch request tracking services
+paths:
+  /product/sellers/{sellerId}/products/batch-requests/{batchRequestId}:
+    get:
+      tags:
+      - BatchRequests
+      summary: Batch Request Status Check (getBatchRequestResult)
+      description: 'Checks the result of operations obtained via batchRequestId. The status field is checked to determine whether the batch operation has been completed. Batch request results can be viewed up to 4 hours after completion.
+
+        '
+      operationId: getBatchRequestResult
+      parameters:
+      - $ref: '#/components/parameters/sellerId'
+      - name: batchRequestId
+        in: path
+        required: true
+        description: Batch request ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchRequestResult'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  responses:
+    Unauthorized:
+      description: One of supplierID, API Key, or API Secret Key is missing or incorrect.
+  parameters:
+    sellerId:
+      name: sellerId
+      in: path
+      required: true
+      description: Seller ID
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    BatchRequestResult:
+      type: object
+      properties:
+        batchRequestId:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              requestItem:
+                type: object
+              status:
+                type: string
+                enum:
+                - SUCCESS
+                - FAILED
+              failureReasons:
+                type: array
+                items:
+                  type: string
+        status:
+          type: string
+          enum:
+          - COMPLETED
+          - IN_PROGRESS
+        creationDate:
+          type: integer
+          format: int64
+        lastModification:
+          type: integer
+          format: int64
+        sourceType:
+          type: string
+          enum:
+          - API
+          - WEB
+        itemCount:
+          type: integer
+        failedItemCount:
+          type: integer
+        batchRequestType:
+          type: string
+          enum:
+          - ProductV2OnBoarding
+          - ProductV2Update
+          - ProductInventoryUpdate
+          - ProductArchiveUpdate
+          - ProductDeletion
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication - Enter your API Key as the Username and API Secret Key as the Password. These credentials can be obtained from Trendyol Seller Panel > My Account > Integration Information. A User-Agent header is required for all requests (format: "SellerId - IntegratorCompanyName" or "SellerId - SelfIntegration").'
+x-readme:
+  proxy-enabled: false
