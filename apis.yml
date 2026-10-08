@@ -122,6 +122,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: RateLimits
+  url: rate-limits/trendyol-rate-limits.yml
 - type: DomainSecurity
   url: security/trendyol-domain-security.yml
 - type: Website
