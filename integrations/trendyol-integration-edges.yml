@@ -1,0 +1,16 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://zapier.com/apps/trendyol/integrations
+- https://n8n.io/integrations/trendyol/
+- https://composio.dev/toolkits/trendyol
+- https://monid.ai/tools/trendyol
+checked:
+- https://composio.dev/toolkits/trendyol
+- https://monid.ai/tools/trendyol
+- https://n8n.io/integrations/trendyol/
+- https://zapier.com/apps/trendyol/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
