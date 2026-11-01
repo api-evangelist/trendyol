@@ -64,6 +64,110 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Trendyol is a company surfaced as a portfolio company of bond-capital, softbank-vision-fund and added to the API Evangelist network as a stub for enrichment. Sector: ecommerce. This profile is a lead awaiting the enrichment pipeline.
+Trendyol is Turkey's largest e-commerce marketplace and a leading fashion and retail platform operating across Türkiye, the Gulf, Azerbaijan, and Central & Eastern Europe. Its Marketplace (Partner) API lets sellers and integrators manage the full commerce lifecycle: product catalog with category/brand/ attribute data, price and stock updates, order and shipment-package fulfillment, returns and claims, invoicing, settlements and financial reconciliation, the Export Center, customer questions, and order webhooks. Authentication is HTTP Basic (API key/secret) with a mandatory User-Agent header, plus an OAuth 2.0 authorization-code flow for multi-supplier integrators. Bulk writes are asynchronous and confirmed via a batchRequestId.
 
-Backed by: bond-capital, softbank-vision-fund — https://trendyol.com
+**Areas:** Company · E-Commerce · Marketplace · Retail · Fashion · Turkey · Order Management · Fulfillment · Logistics · Webhook
+
+## Trendyol on APIs.io
+
+Everything profiled for Trendyol is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/trendyol/](https://apis.io/providers/trendyol/)** — or go straight to one of the APIs or properties below.
+
+### APIs (1)
+
+- [Trendyol Marketplace API](https://apis.io/apis/trendyol/trendyol-marketplace-api/) — The Trendyol Marketplace / Partner API for sellers and integrators — product, order/shipment, returns, invoice, settlement, and webhook operations.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Trendyol Webhooks](https://apis.io/asyncapis/trendyol/trendyol-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [trendyol](https://apis.io/servers/trendyol/trendyol/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Trendyol Authentication](https://apis.io/security/trendyol/trendyol-authentication/)
+- [Trendyol Domain Security](https://apis.io/security/trendyol/trendyol-domain-security/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Trendyol Rate Limits](https://apis.io/rate-limits/trendyol/trendyol-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://trendyol.com)
+- [Documentation](https://developers.trendyol.com/docs/getting-started)
+- [Getting started](https://developers.trendyol.com/docs/getting-started)
+- [API reference](https://developers.trendyol.com/reference)
+- [Support](https://developers.trendyol.com/docs/support-request)
+- [Changelog](https://developers.trendyol.com/changelog)
+- [Blog](https://medium.com/trendyol-tech)
+- [GitHub](https://github.com/Trendyol)
+- [Status](https://developers.trendyol.com/docs/api-status)
+
+## API Evangelist rating
+
+**Kin Score 35.3** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 39.0 |
+| Contract governance | 4.5 |
+| Operational transparency | 65.8 |
+| Developer ergonomics | 44.6 |
+| Access clarity | 0.0 |
+
+**Agent readiness 26.1** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 16.7** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/trendyol/](https://apis.io/providers/trendyol/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Trendyol: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/trendyol/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
